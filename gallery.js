@@ -104,21 +104,23 @@ function generateSketchForGalleryContainer(){
     var selectFilters;
     var selectCategory;
 
-    galleryWrapper = document.createElement("div");
-    galleryFilterContainer = document.createElement("div");
-    filters = document.createElement("div");
-    sortCategory = document.createElement("div");
-    selectFilters = document.createElement("select");
-    selectCategory = document.createElement("select");
-
     //Make sure you adopt class names for the given IDs
+    galleryWrapper = document.createElement("div");
     galleryWrapper.setAttribute("id","gallery-wrapper");
+
+    galleryFilterContainer = document.createElement("div");
     galleryFilterContainer.setAttribute("id","gallery-filter-container");
+
+    filters = document.createElement("div");
     filters.setAttribute("id","filters");
+
+    sortCategory = document.createElement("div");
     sortCategory.setAttribute("id","filters-cat"); //Change the ID to sort-cat later
 
-    //Make sure you adopt class names for the given IDs
+    selectFilters = document.createElement("select");
     selectFilters.setAttribute("id","filters-select");
+
+    selectCategory = document.createElement("select");
     selectCategory.setAttribute("id","filter-category");
 
     filters.appendChild(selectFilters);
