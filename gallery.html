@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+    <div id="gallery-container">
+        <div id="gallery-wrapper">
+        </div>
+        <div id="gallery-filter-container">
+            <div id="filters">
+                Sort by:
+                <select id="filters-select" >
+                    <option value="none">none</option>
+                    <option value="title">Title</option>
+                    <option value="category">Category</option>
+                    <option value="Date">Date</option>
+                </select>
+            </div>
+            <div id="filters-cat" >
+                Filter by Category:
+                <select name="" id="filter-category" >
+                    <option value="">none</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Modal -->
+    <div id="imageModalWrapper">
+        <div id="imageModal" class="modal">
+            <div id="cross-icon" onclick="closeModal()">
+                <!-- <img src="images/1.jpg" alt=""> -->
+                &times;
+            </div>
+            <!-- Next/previous controls -->
+            <a class="prev" onclick="changeImage(-1)">&#10094;</a>
+            <a class="next" onclick="changeImage(1)">&#10095;</a>
+            
+            <div id="modal-main-wrapper">
+                <div id="modal-image-container" class="sample">    
+                    <img src="images/4.jpg" alt="" id="modal-image">
+                </div>
+            </div>
+            
+            <div id="image-detail-container">
+                <div class="image-detail">Title:<p id="title">qwertyuio</p></div>
+                <div class="image-detail">Category:<p id="category">qwertyhbvcds</p></div>
+                <div class="image-detail">Date:<p id="date">1234567</p></div>
+            </div>
+            
+        </div>
+    </div>
+</body>
+<script src="helper.js"> </script>
+<script src="modal.js"> </script>
+<script src="gallery.js"> </script>
+</html>
