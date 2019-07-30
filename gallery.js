@@ -120,6 +120,14 @@ function generateSketchForGalleryContainer(){
     selectFilters = document.createElement("select");
     selectFilters.setAttribute("id","filters-select");
 
+    var valuesForSort = ["none","Title","Category","Date"];
+    for (var temp = 0 ; temp < valuesForSort.length; temp++){
+        var option = document.createElement("option");
+        option.setAttribute("value",valuesForSort[temp].toLowerCase());
+        option.innerHTML = valuesForSort[temp];
+        selectFilters.appendChild(option);
+    }
+
     selectCategory = document.createElement("select");
     selectCategory.setAttribute("id","filter-category");
 
