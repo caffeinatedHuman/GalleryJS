@@ -88,12 +88,13 @@ var imageHolder = document.createElement("div");
 
 function init(){
     currentGridSize = _whatIsTheGridSize(noOfImages);
-    generateSketch();
+    generateSketchForGalleryContainer();
+    generateSketchForModal();
     generateGalleryGrid(defaultGridSize);
 }
 
 // This function generates the Basic sketc of the Gallery:
-function generateSketch(){
+function generateSketchForGalleryContainer(){
     var galleryContainer = document.getElementById("gallery-container");
 
     var galleryWrapper;
@@ -128,6 +129,55 @@ function generateSketch(){
 
     galleryContainer.appendChild(galleryWrapper);
     galleryContainer.appendChild(galleryFilterContainer);
+}
+
+function generateSketchForModal(){
+    var imageModalWrapper = document.getElementById("imageModalWrapper");
+    var imageModal;
+    var crossIcon;
+    var prev;
+    var next;
+    var modalMainWrapper;
+    var modalImageContainer;
+    var imageDetailContainer;
+    var imageDetail;
+
+    //Make sure you adopt class names for the given IDs
+    imageModal = document.createElement("div");
+    imageModal.setAttribute("id","imageModal");
+    imageModal.setAttribute("class","modal");
+
+    crossIcon = document.createElement("div");
+    crossIcon.setAttribute("id","cross-icon");
+
+    prev = document.createElement("a");
+    prev.setAttribute("class","prev");
+
+    next = document.createElement("a");
+    next.setAttribute("class","next");
+
+    modalMainWrapper = document.createElement("div");
+    modalMainWrapper.setAttribute("id","modal-main-wrapper");
+
+    modalImageContainer = document.createElement("div");
+    modalImageContainer.setAttribute("id","modal-image-container");
+    modalImageContainer.setAttribute("class","sample");
+
+    imageDetailContainer = document.createElement("div");
+    imageDetailContainer.setAttribute("id","image-detail-container");
+
+    // imageDetail = document.createElement("div");
+    // imageDetail.setAttribute("class","image-detail");
+
+    modalMainWrapper.appendChild(modalImageContainer);
+
+    imageModal.appendChild(crossIcon);
+    imageModal.appendChild(prev);
+    imageModal.appendChild(next);
+    imageModal.appendChild(modalMainWrapper);
+    imageModal.appendChild(imageDetailContainer);
+
+    imageModalWrapper.appendChild(imageModal);
 }
 
 // This function generates the images in the DOM:
