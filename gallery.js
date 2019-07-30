@@ -88,13 +88,52 @@ var imageHolder = document.createElement("div");
 
 function init(){
     currentGridSize = _whatIsTheGridSize(noOfImages);
+    generateSketch();
     generateGalleryGrid(defaultGridSize);
+}
+
+// This function generates the Basic sketc of the Gallery:
+function generateSketch(){
+    var galleryContainer = document.getElementById("gallery-container");
+
+    var galleryWrapper;
+    var galleryFilterContainer;
+    var filters;
+    var sortCategory;
+    var selectFilters;
+    var selectCategory;
+
+    galleryWrapper = document.createElement("div");
+    galleryFilterContainer = document.createElement("div");
+    filters = document.createElement("div");
+    sortCategory = document.createElement("div");
+    selectFilters = document.createElement("select");
+    selectCategory = document.createElement("select");
+
+    //Make sure you adopt class names for the given IDs
+    galleryWrapper.setAttribute("id","gallery-wrapper");
+    galleryFilterContainer.setAttribute("id","gallery-filter-container");
+    filters.setAttribute("id","filters");
+    sortCategory.setAttribute("id","filters-cat"); //Change the ID to sort-cat later
+
+    //Make sure you adopt class names for the given IDs
+    selectFilters.setAttribute("id","filters-select");
+    selectCategory.setAttribute("id","filter-category");
+
+    filters.appendChild(selectFilters);
+    sortCategory.appendChild(selectCategory);
+
+    galleryFilterContainer.appendChild(filters);
+    galleryFilterContainer.appendChild(sortCategory);
+
+    galleryContainer.appendChild(galleryWrapper);
+    galleryContainer.appendChild(galleryFilterContainer);
 }
 
 // This function generates the images in the DOM:
 function generateGalleryGrid(imageCount){
     var objectCounter = 0;
-    
+
     currentGridSize = _whatIsTheGridSize(imageCount);
     currentImageArray = [];
 
@@ -106,7 +145,7 @@ function generateGalleryGrid(imageCount){
             objectCounter++;
         }
     }
-    
+
 }
 
 
@@ -117,12 +156,12 @@ function generateGalleryGrid(imageCount){
 // Filtering:
 function filterByCategory(){
     var filterCategory = document.getElementById("filter-category");
-    
+
     for (var elem = 0 ; elem < allAvailableCategories.length; elem++){
         var value = allAvailableCategories[elem];
         var option = document.createElement("option");
         option.innerHTML = value
-        
+
         filterCategory.appendChild(option);
     }
 }
@@ -130,9 +169,9 @@ function filterByCategory(){
 // Sorting:
 function sortImages(event){
     if (event.target.id !== 'filters-select') return;
-    
+
     var toSortBy = event.target.selectedOptions;
-    
+
     switch (toSortBy[0].innerHTML) {
         case 'Title':{
             sortedTitles = allAvailableTitles.sort();
@@ -152,66 +191,66 @@ function sortImages(event){
             generateGalleryGrid(noOfImages);
         }
     }
-    
+
 }
 
 function sortBy(type, sortedArray){
     var objectCounter = 0;
     currentImageArray = [];
-    
+
     sortByTypeIsActive = true;
     sortByTypeIsValue = type;
-    
+
     removeAllImages();
-    
+
     for (var elem2 in sortedArray){
         var currTypeValue = sortedArray[elem2];
-        
+
         for (var elem = 0 ;elem < noOfImages;elem++){
             tempObject = imagesInput[elem];
-            
+
             if (filteringByCategoryIsActive){
                 if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
-                    if (tempObject[type].trim() == currTypeValue.trim()){ 
+                    if (tempObject[type].trim() == currTypeValue.trim()){
                         var imgTag = _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
                         currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
                     }
                 }
             }else{
-                if (tempObject[type].trim() == currTypeValue.trim()){ 
+                if (tempObject[type].trim() == currTypeValue.trim()){
                     var imgTag = _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
                 }
             }
         }
-    }    
+    }
 }
 
 function updateCategory(event){
-    
+
     if (event.target.id !== 'filter-category') return;
-    
+
     if (event.target.selectedOptions[0].text == 'none'){
         filteringByCategoryIsActive = false;
     }
     else{
         filteringByCategoryIsActive = true;
     }
-    
+
     filteringByCategoryValue = event.target.selectedOptions[0].innerHTML.trim();
-    
+
     var allImagesInTable = document.getElementsByClassName("image-thumbnail");
     var len = allImagesInTable.length;
-    
+
     var categoriesArray = [];
-    
+
     for (elem = 0; elem<len ; elem++){
         var currImage = allImagesInTable[elem];
         var currCategory = currImage.getAttribute("data-image-category");
-        currCategory = currCategory.trim(); 
-        
+        currCategory = currCategory.trim();
+
         if (currCategory!=(event.target.selectedOptions[0].innerHTML).trim()){
             allImagesInTable[elem].style.display="none";
         }
@@ -220,11 +259,11 @@ function updateCategory(event){
             allImagesInTable[elem].style.display="block";
         }
     }
-    
+
     if (sortByTypeIsActive){
         var selectFilter = document.getElementById("filters-select");
         var selectFilterValue = selectFilter.options[selectFilter.selectedIndex].value;
-        
+
         switch (selectFilterValue){
             case 'title':{
                 sortedArray = allAvailableTitles.sort();
@@ -241,7 +280,7 @@ function updateCategory(event){
             }
         }
     }
-    
+
     console.log(allImagesInTable);
 }
 // ----X----X----
