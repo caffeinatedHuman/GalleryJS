@@ -18,9 +18,11 @@ function _whatIsTheGridSize(noOfImages){
 
 
 function _createImgTag(objectCounter, src, dataTitle, dataCategory){
-  var newImageDiv = document.createElement("div");
-  newImageDiv.setAttribute("id","image-"+objectCounter);
-  newImageDiv.setAttribute("class","gallery-image");
+  var galleryWrapper = document.getElementById("gallery-wrapper");
+  
+  var galleryImage = document.createElement("div");
+  galleryImage.setAttribute("id","image-"+objectCounter);
+  galleryImage.setAttribute("class","gallery-image");
   
   var imgTag = document.createElement("img");
   imgTag.setAttribute("src",src);
@@ -29,12 +31,24 @@ function _createImgTag(objectCounter, src, dataTitle, dataCategory){
   imgTag.setAttribute("data-image-category",dataCategory);
   imgTag.setAttribute("data-image-identifier",objectCounter);
 
-  newImageDiv.style.width = `calc(100%/ ${_whatIsTheGridSize(currentGridSize)})`;
+  var imgTagWidth = 100 / _whatIsTheGridSize(currentGridSize);
+  galleryImage.style.width = imgTagWidth + '%';
   
   imgTag.addEventListener("click",processImageClick);
   
-  newImageDiv.appendChild(imgTag);
-  galleryWrapper.appendChild(newImageDiv);
+  var infoOverlay = document.createElement("div");
+  infoOverlay.setAttribute("class","infoOverlay");
+  
+  var infoOverlayValues = [dataTitle,dataCategory,"Date"];
+  for (var temp = 0; temp < 3; temp++){
+    var p = document.createElement("p");
+    p.innerHTML = infoOverlayValues[temp];
+    infoOverlay.appendChild(p);
+  }
+
+  galleryImage.appendChild(imgTag);
+  galleryImage.appendChild(infoOverlay);
+  galleryWrapper.appendChild(galleryImage);
   
   return imgTag;
 }

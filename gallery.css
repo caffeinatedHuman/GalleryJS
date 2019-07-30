@@ -30,6 +30,19 @@
   width: 100%;
 }
 
+.infoOverlay{
+  background-color: bisque;
+  position: relative;
+  bottom: 58px;
+  width: 100%;
+  display: none;
+}
+
+
+.gallery-image:hover .infoOverlay{
+  display: block;
+}
+
 p{
   margin: 0;
 }

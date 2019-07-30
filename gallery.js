@@ -98,6 +98,7 @@ function generateSketchForGalleryContainer(){
     var galleryContainer = document.getElementById("gallery-container");
 
     var galleryWrapper;
+    var infoOverlay;
     var galleryFilterContainer;
     var filters;
     var sortCategory;
@@ -107,6 +108,9 @@ function generateSketchForGalleryContainer(){
     //Make sure you adopt class names for the given IDs
     galleryWrapper = document.createElement("div");
     galleryWrapper.setAttribute("id","gallery-wrapper");
+
+    infoOverlay = document.createElement("div");
+    infoOverlay.setAttribute("class","infoOverlay");
 
     galleryFilterContainer = document.createElement("div");
     galleryFilterContainer.setAttribute("id","gallery-filter-container");
@@ -137,8 +141,8 @@ function generateSketchForGalleryContainer(){
     galleryFilterContainer.appendChild(filters);
     galleryFilterContainer.appendChild(sortCategory);
 
-    galleryContainer.appendChild(galleryWrapper);
     galleryContainer.appendChild(galleryFilterContainer);
+    galleryContainer.appendChild(galleryWrapper);
 }
 
 function generateSketchForModal(){
