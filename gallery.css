@@ -38,6 +38,9 @@
   display: none;
 }
 
+.gallery-image:hover{
+  cursor: pointer;
+}
 
 .gallery-image:hover .infoOverlay{
   display: block;
