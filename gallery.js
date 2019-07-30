@@ -97,31 +97,23 @@ function init(){
 function generateSketchForGalleryContainer(){
     var galleryContainer = document.getElementById("gallery-container");
 
-    var galleryWrapper;
-    var infoOverlay;
-    var galleryFilterContainer;
-    var filters;
-    var sortCategory;
-    var selectFilters;
-    var selectCategory;
-
     //Make sure you adopt class names for the given IDs
-    galleryWrapper = document.createElement("div");
+    var galleryWrapper = document.createElement("div");
     galleryWrapper.setAttribute("id","gallery-wrapper");
 
-    infoOverlay = document.createElement("div");
+    var infoOverlay = document.createElement("div");
     infoOverlay.setAttribute("class","infoOverlay");
 
-    galleryFilterContainer = document.createElement("div");
+    var galleryFilterContainer = document.createElement("div");
     galleryFilterContainer.setAttribute("id","gallery-filter-container");
 
-    filters = document.createElement("div");
+    var filters = document.createElement("div");
     filters.setAttribute("id","filters");
 
-    sortCategory = document.createElement("div");
+    var sortCategory = document.createElement("div");
     sortCategory.setAttribute("id","filters-cat"); //Change the ID to sort-cat later
 
-    selectFilters = document.createElement("select");
+    var selectFilters = document.createElement("select");
     selectFilters.setAttribute("id","filters-select");
 
     var valuesForSort = ["none","Title","Category","Date"];
@@ -132,7 +124,7 @@ function generateSketchForGalleryContainer(){
         selectFilters.appendChild(option);
     }
 
-    selectCategory = document.createElement("select");
+    var selectCategory = document.createElement("select");
     selectCategory.setAttribute("id","filter-category");
 
     filters.appendChild(selectFilters);
@@ -147,37 +139,30 @@ function generateSketchForGalleryContainer(){
 
 function generateSketchForModal(){
     var imageModalWrapper = document.getElementById("imageModalWrapper");
-    var imageModal;
-    var crossIcon;
-    var prev;
-    var next;
-    var modalMainWrapper;
-    var modalImageContainer;
-    var imageDetailContainer;
     var imageDetail;
 
     //Make sure you adopt class names for the given IDs
-    imageModal = document.createElement("div");
+    var imageModal = document.createElement("div");
     imageModal.setAttribute("id","imageModal");
     imageModal.setAttribute("class","modal");
 
-    crossIcon = document.createElement("div");
+    var crossIcon = document.createElement("div");
     crossIcon.setAttribute("id","cross-icon");
 
-    prev = document.createElement("a");
+    var prev = document.createElement("a");
     prev.setAttribute("class","prev");
 
-    next = document.createElement("a");
+    var next = document.createElement("a");
     next.setAttribute("class","next");
 
-    modalMainWrapper = document.createElement("div");
+    var modalMainWrapper = document.createElement("div");
     modalMainWrapper.setAttribute("id","modal-main-wrapper");
 
-    modalImageContainer = document.createElement("div");
+    var modalImageContainer = document.createElement("div");
     modalImageContainer.setAttribute("id","modal-image-container");
     modalImageContainer.setAttribute("class","sample");
 
-    imageDetailContainer = document.createElement("div");
+    var imageDetailContainer = document.createElement("div");
     imageDetailContainer.setAttribute("id","image-detail-container");
 
     // imageDetail = document.createElement("div");
@@ -276,14 +261,14 @@ function sortBy(type, sortedArray){
             if (filteringByCategoryIsActive){
                 if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
                     if (tempObject[type].trim() == currTypeValue.trim()){
-                        var imgTag = _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
+                        _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
                         currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
                     }
                 }
             }else{
                 if (tempObject[type].trim() == currTypeValue.trim()){
-                    var imgTag = _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
+                    _createImgTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
                 }
@@ -293,6 +278,7 @@ function sortBy(type, sortedArray){
 }
 
 function updateCategory(event){
+    var objectCounter = 0;
 
     if (event.target.id !== 'filter-category') return;
 
@@ -306,21 +292,23 @@ function updateCategory(event){
     filteringByCategoryValue = event.target.selectedOptions[0].innerHTML.trim();
 
     var allImagesInTable = document.getElementsByClassName("image-thumbnail");
+
     var len = allImagesInTable.length;
 
     var categoriesArray = [];
 
-    for (elem = 0; elem<len ; elem++){
-        var currImage = allImagesInTable[elem];
-        var currCategory = currImage.getAttribute("data-image-category");
+    removeAllImages();
+
+    for (elem = 0; elem<noOfImages ; elem++){
+        var currImage = imagesInput[elem];
+        var currCategory = currImage["category"];
         currCategory = currCategory.trim();
 
-        if (currCategory!=(event.target.selectedOptions[0].innerHTML).trim()){
-            allImagesInTable[elem].style.display="none";
-        }
-        else{
+        if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
             categoriesArray.push()
-            allImagesInTable[elem].style.display="block";
+            _createImgTag(objectCounter, currImage.location, currImage["title"], currImage["category"]);
+            currentImageArray.push(imagesInput[elem]);
+            objectCounter++;
         }
     }
 
