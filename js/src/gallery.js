@@ -2,7 +2,7 @@ var imagesInput =  {
     "0":{
         "title":"Title 9",
         "category":"Category 0",
-        "date":"1564941066292",
+        "date":"1565541066292",
         "location": "images/1.jpg"
     },
     "1":{
@@ -14,13 +14,13 @@ var imagesInput =  {
     "2":{
         "title":"Title 7",
         "category":"Category 2",
-        "date":"1564741066292",
+        "date":"1568911266292",
         "location": "images/8.jpg"
     },
     "3":{
         "title":"Title 6",
         "category":" Category 0",
-        "date":"15649417466292",
+        "date":"1564741066292",
         "location": "images/2.jpg"
     },
     "4":{
@@ -32,13 +32,13 @@ var imagesInput =  {
     "5":{
         "title":"Title 4",
         "category":" Category 2",
-        "date":"1564911066292",
+        "date":"1564842866292",
         "location": "images/3.jpg"
     },
     "6":{
         "title":"Title 3",
         "category":" Category 1",
-        "date":"1564941866292",
+        "date":"1574942866292",
         "location": "images/7.jpg"
     },
     "7":{
@@ -50,7 +50,7 @@ var imagesInput =  {
     "8":{
         "title":"Title 1",
         "category":" Category 1",
-        "date":"1564941066290",
+        "date":"1364941066290",
         "location": "images/6.jpg"
     }
 };
@@ -73,13 +73,11 @@ var gallery = (function (){
     var sortByTypeIsValue = null;
 
     var currentImageArray = []; //This variable will store the images currently present on the UI, and will be visible in the Lightbox
-    // const minImages = 0;
-    // const maxImages = 36;
-    // const defaultGridSize = 3;
 
     return {
         defaultGridSize: DEFAULT_GRID_SIZE,
         currentGridSize: currentGridSize,
+        noOfImages: noOfImages,
         currentImageArray: currentImageArray,
         availableCategories: allAvailableCategories,
         availableTitles: allAvailableTitles,
@@ -90,23 +88,24 @@ var gallery = (function (){
     }
 
     function init(){
-        // var noOfImages = Object.keys(imagesInput).length;
+        gallery.currentGridSize = helper.whatIsTheGridSize(noOfImages);
 
-        currentGridSize = helper.whatIsTheGridSize(noOfImages);
         generateSketchForGalleryContainer();
         generateSketchForModal();
-        generateGalleryGrid(DEFAULT_GRID_SIZE);
+        generateGalleryGrid();
         generateFilterByCategory();
+
         document.addEventListener('input',updateCategory);
         document.addEventListener('input',sortImages);
-        // sortBy(gallery.sortByTypeIsValue,gallery.availableTitles.sort());
+        document.addEventListener('input',updateGrid);
+
+        modal.generator();
     }
 
-    // This function generates the Basic sketc of the Gallery:
+    // This function generates the Basic sketch of the Gallery:
     function generateSketchForGalleryContainer(){
         var galleryContainer = document.getElementById("gallery-container");
 
-        //Make sure you adopt class names for the given IDs
         var custonGalleryWrapper = document.createElement("div");
         custonGalleryWrapper.setAttribute("id","gallery-wrapper");
 
@@ -122,6 +121,9 @@ var gallery = (function (){
         var customSortCategory = document.createElement("div");
         customSortCategory.setAttribute("class","filters-cat"); //Change the ID to sort-cat later
 
+        var customGridFilter = document.createElement("div");
+        customGridFilter.setAttribute("class","filters-grid");
+
         var customSelectFilters = document.createElement("select");
         customSelectFilters.setAttribute("id","filters-select");
 
@@ -133,28 +135,38 @@ var gallery = (function (){
             customSelectFilters.appendChild(option);
         }
 
+        var customSelectGrids = document.createElement("select");
+        customSelectGrids.setAttribute("id","filters-grid");
+
+        var valuesForGrid = ["3 X 3","4 X 4","5 X 5"];
+        for (var temp = 0 ; temp < valuesForGrid.length; temp++){
+            var option = document.createElement("option");
+            option.setAttribute("value",valuesForGrid[temp].toLowerCase());
+            option.innerHTML = valuesForGrid[temp];
+            customSelectGrids.appendChild(option);
+        }
+
         var customSelectCategory = document.createElement("select");
         customSelectCategory.setAttribute("id","filter-category");
 
         customFilters.appendChild(customSelectFilters);
+        customGridFilter.appendChild(customSelectGrids);
         customSortCategory.appendChild(customSelectCategory);
 
         customGalleryFilterContainer.appendChild(customFilters);
+        customGalleryFilterContainer.appendChild(customGridFilter);
         customGalleryFilterContainer.appendChild(customSortCategory);
 
         galleryContainer.appendChild(customGalleryFilterContainer);
         galleryContainer.appendChild(custonGalleryWrapper);
-
-        // gallery.sortByTypeIsValue = (document.getElementById("filters-select").selectedOptions[0].text);
-
     }
 
+    //This function generates the Basic sketch for the Modal:
     function generateSketchForModal(){
         var imageModalOverlay = document.getElementById("imageModalWrapperOverlay");
         var imageModalWrapper = document.getElementById("imageModalWrapper");
         var imageDetail;
 
-        //Make sure you adopt class names for the given IDs
         var customImageModal = document.createElement("div");
         customImageModal.setAttribute("id","imageModal");
         customImageModal.setAttribute("class","modal");
@@ -184,7 +196,7 @@ var gallery = (function (){
         var customImageDetailContainer = document.createElement("div");
         customImageDetailContainer.setAttribute("id","image-detail-container");
 
-        var valuesForSort = ["Title"/*,"Category","Date"*/];
+        var valuesForSort = ["Title","Category","Date"];
         for (var temp = 0 ; temp < valuesForSort.length; temp++){
             imageDetail = document.createElement("div");
             imageDetail.setAttribute("class","image-detail");
@@ -199,19 +211,16 @@ var gallery = (function (){
         imageModalOverlay.appendChild(customCrossIcon);
         imageModalOverlay.appendChild(customPrev);
         imageModalOverlay.appendChild(customNext);
-        imageModalWrapper.appendChild(customImageDetailContainer);
         customImageModal.appendChild(customModalMainWrapper);
-        // customImageModal.appendChild(customImageDetailContainer);
 
         imageModalWrapper.appendChild(customImageModal);
+        imageModalWrapper.appendChild(customImageDetailContainer);
     }
-    // ----X----X----
 
-    // This function generates the images in the DOM:
-    function generateGalleryGrid(imageCount){
+    // This function generates the images in the Gallery:
+    function generateGalleryGrid(){
         var objectCounter = 0;
 
-        // var currentGridSize = helper.whatIsTheGridSize(imageCount);
         gallery.currentImageArray = [];
 
         for (var elem = 0; elem < noOfImages; elem++){
@@ -222,18 +231,9 @@ var gallery = (function (){
                 objectCounter++;
             }
         }
-
     }
 
-
-
-    var maxImagesForGrid = DEFAULT_GRID_SIZE*DEFAULT_GRID_SIZE;
-
-
-
-
-
-    // Filter & Sort functions
+    // Filter & Sort functions:
     // Filtering:
     function generateFilterByCategory(){
         var filterCategory = document.getElementById("filter-category");
@@ -249,7 +249,6 @@ var gallery = (function (){
 
     // Sorting:
     function sortImages(event){
-        debugger
         if (event.target.id !== 'filters-select') return;
 
         var toSortBy = event.target.selectedOptions;
@@ -262,6 +261,7 @@ var gallery = (function (){
             }
             case 'Date':{
                 var sortedDates = allAvailableDates.sort();
+                sortBy("date",sortedDates);
                 break;
             }
             case 'Category':{
@@ -274,11 +274,9 @@ var gallery = (function (){
                 generateGalleryGrid(noOfImages);
             }
         }
-
     }
 
     function sortBy(type, sortedArray){
-        debugger
         var objectCounter = 0;
         gallery.currentImageArray = [];
 
@@ -303,7 +301,7 @@ var gallery = (function (){
                     }
                 }else{
                     if (tempObject[type].trim() == currTypeValue.trim()){
-                        helper.generateImageTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category);
+                        helper.generateImageTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category,imagesInput[elem].date);
                         gallery.currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
                     }
@@ -319,8 +317,6 @@ var gallery = (function (){
 
         if (event.target.selectedOptions[0].text == 'All'){
             filteringByCategoryIsActive = false;
-            // sortImages("all");
-            // break;
         }
         else{
             filteringByCategoryIsActive = true;
@@ -339,13 +335,13 @@ var gallery = (function (){
 
             if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
                 categoriesArray.push()
-                helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"]);
+                helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
                 currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
             }else{
                 if (event.target.selectedOptions[0].innerHTML == "All"){
                     categoriesArray.push()
-                    helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"]);
+                    helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
                 }
@@ -368,12 +364,53 @@ var gallery = (function (){
                     break;
                 }
                 case 'date':{
+                    sortedArray = allAvailableDates.sort();
+                    sortBy('date',sortedArray);
                     break;
                 }
             }
         }
     }
-    // ----X----X----
+
+    function common(size){
+        var objectCounter = 0;
+        // var currentGridSize = helper.whatIsTheGridSize(imageCount);
+        gallery.currentImageArray = [];
+
+        for (var elem = 0; elem < noOfImages; elem++){
+            if(objectCounter < (noOfImages)){
+                var currentObjectProp = imagesInput[elem];
+                helper.generateGrid(size,objectCounter ,currentObjectProp.location, imagesInput[objectCounter].title, imagesInput[objectCounter].category,imagesInput[objectCounter].date);
+                gallery.currentImageArray.push(imagesInput[elem]);
+                objectCounter++;
+            }
+        }
+    }
+
+    function updateGrid(event){
+        if (event.target.id !== 'filters-grid') return;
+
+        var selectedGridValue = event.target.selectedOptions[0].text;
+
+        switch (selectedGridValue){
+            case "3 X 3":{
+                removeAllImages();
+                common(3);
+                break;
+            }
+            case "4 X 4":{
+                removeAllImages();
+                debugger
+                common(4);
+                break;
+            }
+            case "5 X 5":{
+                removeAllImages();
+                common(5);
+                break;
+            }
+        }
+    }
 
     function removeAllImages(){
         var galleryWrapper = document.getElementById("gallery-wrapper");
@@ -381,7 +418,6 @@ var gallery = (function (){
             galleryWrapper.removeChild(galleryWrapper.firstChild);
         }
     }
-
 }());
 
 gallery.generator();
