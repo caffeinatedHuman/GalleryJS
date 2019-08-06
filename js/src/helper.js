@@ -8,8 +8,8 @@ var helper = (function(){
     generateTitles: _populateArray,
     generateDates: _populateArray,
     whatIsTheGridSize: _whatIsTheGridSize,
-    generateImageTag: _createImgTag,
-    generateGrid: regenerateGrid
+    generateImageTag: _createImgTag
+    // generateGrid: regenerateGrid
   }
 
   // This function will return the size of the Grid based on the no onf images supplied
@@ -28,7 +28,7 @@ var helper = (function(){
     }
   }
 
-  function _createImgTag(objectCounter, src, dataTitle, dataCategory, dataDate){
+  function _createImgTag(gridSize, objectCounter, src, dataTitle, dataCategory, dataDate){
     var galleryWrapper = document.getElementById("gallery-wrapper");
 
     var customGalleryImage = document.createElement("div");
@@ -43,7 +43,7 @@ var helper = (function(){
     customImgTag.setAttribute("data-image-identifier",objectCounter);
     customImgTag.setAttribute("data-image-date",dataDate);
 
-    var imgTagWidth = 100 / _whatIsTheGridSize(gallery.noOfImages);
+    var imgTagWidth = 100 / gridSize;
     customGalleryImage.style.width = imgTagWidth + '%';
 
     customGalleryImage.addEventListener("click",modal.process);
@@ -115,41 +115,5 @@ var helper = (function(){
     }
 
     return temp;
-  }
-
-  function regenerateGrid(gridSize, objectCounter, src, dataTitle, dataCategory, dataDate){
-    var galleryWrapper = document.getElementById("gallery-wrapper");
-
-    var customGalleryImage = document.createElement("div");
-    customGalleryImage.setAttribute("id","image-"+objectCounter);
-    customGalleryImage.setAttribute("class","gallery-image");
-
-    var customImgTag = document.createElement("img");
-    customImgTag.setAttribute("src",src);
-    customImgTag.setAttribute("class","image-thumbnail");
-    customImgTag.setAttribute("data-image-title",dataTitle);
-    customImgTag.setAttribute("data-image-category",dataCategory);
-    customImgTag.setAttribute("data-image-identifier",objectCounter);
-
-    var imgTagWidth = 100 / gridSize;
-    customGalleryImage.style.width = imgTagWidth + '%';
-
-    customGalleryImage.addEventListener("click",modal.process);
-
-    var customInfoOverlay = document.createElement("div");
-    customInfoOverlay.setAttribute("class","infoOverlay");
-
-    var infoOverlayValues = [dataTitle,dataCategory,new Date(parseInt(dataDate)).toLocaleDateString()];
-    var valuesInImageOverlay = ["Title","Category","Date"];
-    for (var temp = 0; temp < 3; temp++){
-      var p = document.createElement("p");
-      p.setAttribute("id","overlay"+valuesInImageOverlay[temp]);
-      p.innerHTML = infoOverlayValues[temp];
-      customInfoOverlay.appendChild(p);
-    }
-
-    customGalleryImage.appendChild(customImgTag);
-    customGalleryImage.appendChild(customInfoOverlay);
-    galleryWrapper.appendChild(customGalleryImage);
   }
 }());

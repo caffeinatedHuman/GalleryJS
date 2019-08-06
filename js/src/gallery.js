@@ -92,7 +92,7 @@ var gallery = (function (){
 
         generateSketchForGalleryContainer();
         generateSketchForModal();
-        generateGalleryGrid();
+        generateGalleryGrid(gallery.currentGridSize);
         generateFilterByCategory();
 
         document.addEventListener('input',updateCategory);
@@ -141,7 +141,7 @@ var gallery = (function (){
         var valuesForGrid = ["3 X 3","4 X 4","5 X 5"];
         for (var temp = 0 ; temp < valuesForGrid.length; temp++){
             var option = document.createElement("option");
-            option.setAttribute("value",valuesForGrid[temp].toLowerCase());
+            option.setAttribute("value",temp+3);
             option.innerHTML = valuesForGrid[temp];
             customSelectGrids.appendChild(option);
         }
@@ -218,15 +218,15 @@ var gallery = (function (){
     }
 
     // This function generates the images in the Gallery:
-    function generateGalleryGrid(){
+    function generateGalleryGrid(gridSize){
         var objectCounter = 0;
 
         gallery.currentImageArray = [];
-
+        gallery.currentGridSize = helper.whatIsTheGridSize(gallery.noOfImages);
         for (var elem = 0; elem < noOfImages; elem++){
             if(objectCounter < (noOfImages)){
                 var currentObjectProp = imagesInput[elem];
-                helper.generateImageTag(objectCounter ,currentObjectProp.location, imagesInput[objectCounter].title, imagesInput[objectCounter].category,imagesInput[objectCounter].date);
+                helper.generateImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter].title, imagesInput[objectCounter].category,imagesInput[objectCounter].date);
                 gallery.currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
             }
@@ -372,44 +372,12 @@ var gallery = (function (){
         }
     }
 
-    function common(size){
-        var objectCounter = 0;
-        // var currentGridSize = helper.whatIsTheGridSize(imageCount);
-        gallery.currentImageArray = [];
-
-        for (var elem = 0; elem < noOfImages; elem++){
-            if(objectCounter < (noOfImages)){
-                var currentObjectProp = imagesInput[elem];
-                helper.generateGrid(size,objectCounter ,currentObjectProp.location, imagesInput[objectCounter].title, imagesInput[objectCounter].category,imagesInput[objectCounter].date);
-                gallery.currentImageArray.push(imagesInput[elem]);
-                objectCounter++;
-            }
-        }
-    }
-
     function updateGrid(event){
         if (event.target.id !== 'filters-grid') return;
 
-        var selectedGridValue = event.target.selectedOptions[0].text;
-
-        switch (selectedGridValue){
-            case "3 X 3":{
-                removeAllImages();
-                common(3);
-                break;
-            }
-            case "4 X 4":{
-                removeAllImages();
-                debugger
-                common(4);
-                break;
-            }
-            case "5 X 5":{
-                removeAllImages();
-                common(5);
-                break;
-            }
-        }
+        var selectedGridValue = event.target.selectedOptions[0].value;
+        removeAllImages();
+        generateGalleryGrid(selectedGridValue);
     }
 
     function removeAllImages(){
