@@ -10,12 +10,7 @@ var modal = (function (){
     }
 
     function init(){
-        attachArrowInteraction();
         attachKeyboardInteraction();
-    }
-
-    function attachArrowInteraction (){
-        var prev = document.getElementById("prev");
     }
 
     function attachKeyboardInteraction(){
@@ -35,7 +30,6 @@ var modal = (function (){
         modal.style.display = "none";
 
         var galleryContainer = document.getElementById("gallery-container");
-        // galleryContainer.style.display = 'block';
 
         var imageModalWrapper = document.getElementById("imageModalWrapper");
         imageModalWrapper.style.display = 'none';
@@ -45,12 +39,11 @@ var modal = (function (){
     }
 
     function processImageClick(){
-        processModal(this);
+        processModal(this.firstChild);
     }
 
     function processModal(currentImage){
         var galleryContainer = document.getElementById("gallery-container");
-        // galleryContainer.style.display = 'none';
 
         var imageModalWrapper = document.getElementById("imageModalWrapper");
         imageModalWrapper.style.display = 'block';
@@ -65,6 +58,7 @@ var modal = (function (){
         var check = currentImage.getAttribute("data-image-identifier");
         var title = document.getElementById("title");
         var category = document.getElementById("category");
+        var date = document.getElementById("date");
 
         // First clear all elements inside the wrapper
         if (modalMainWrapper.firstChild){
@@ -83,6 +77,7 @@ var modal = (function (){
             imgTag.setAttribute("src",gallery.currentImageArray[elem]["location"]);
             imgTag.setAttribute("data-image-title",gallery.currentImageArray[elem]["title"]);
             imgTag.setAttribute("data-image-category",gallery.currentImageArray[elem]["category"]);
+            imgTag.setAttribute("data-image-date",new Date(parseInt(gallery.currentImageArray[elem]["date"])).toLocaleDateString());
 
             if (check == elem)
             modalImageContainer.style.display = "block";
@@ -97,7 +92,8 @@ var modal = (function (){
 
         modal.style.display = "block";
         title.innerHTML = currentImage.getAttribute("data-image-title");
-        // category.innerHTML = currentImage.getAttribute("data-image-category");
+        category.innerHTML = currentImage.getAttribute("data-image-category");
+        date.innerHTML = new Date(parseInt(currentImage.getAttribute("data-image-date"))).toLocaleDateString();
     }
 
     function changeImage(n){
@@ -105,17 +101,14 @@ var modal = (function (){
     }
 
     function showImage(n) {
-        console.log("n:"+n);
-        console.log("slideIndex:"+slideIndex);
         var i;
 
         var slides = document.getElementsByClassName("sample");
         var title = document.getElementById("title");
         var category = document.getElementById("category");
+        var date = document.getElementById("date");
 
         if (n >= slides.length) {
-            console.log("-> n:"+n);
-            console.log("slideIndex:"+slideIndex);
             slideIndex = 0
         }
 
@@ -127,8 +120,7 @@ var modal = (function (){
         slides[slideIndex].style.display = "block";
         title.innerHTML = slides[slideIndex].firstChild.getAttribute("data-image-title");
         category.innerHTML = slides[slideIndex].firstChild.getAttribute("data-image-category");
-
+        date.innerHTML = slides[slideIndex].firstChild.getAttribute("data-image-date");
     }
-
         // --------------------------------------------
 }());
