@@ -8,7 +8,8 @@ var helper = (function(){
     generateTitles: _populateArray,
     generateDates: _populateArray,
     whatIsTheGridSize: _whatIsTheGridSize,
-    generateImageTag: _createImgTag
+    generateImageTag: _createImgTag,
+    generateGrid: regenerateGrid
   }
 
   // This function will return the size of the Grid based on the no onf images supplied
@@ -40,11 +41,12 @@ var helper = (function(){
     customImgTag.setAttribute("data-image-title",dataTitle);
     customImgTag.setAttribute("data-image-category",dataCategory);
     customImgTag.setAttribute("data-image-identifier",objectCounter);
+    customImgTag.setAttribute("data-image-date",dataDate);
 
-    var imgTagWidth = 100 / _whatIsTheGridSize(gallery.currentGridSize);
+    var imgTagWidth = 100 / _whatIsTheGridSize(gallery.noOfImages);
     customGalleryImage.style.width = imgTagWidth + '%';
 
-    customImgTag.addEventListener("click",modal.process);
+    customGalleryImage.addEventListener("click",modal.process);
 
     var customInfoOverlay = document.createElement("div");
     customInfoOverlay.setAttribute("class","infoOverlay");
@@ -61,8 +63,6 @@ var helper = (function(){
     customGalleryImage.appendChild(customImgTag);
     customGalleryImage.appendChild(customInfoOverlay);
     galleryWrapper.appendChild(customGalleryImage);
-
-    // return imgTag;
   }
 
   function _populateArray(type){
@@ -82,6 +82,7 @@ var helper = (function(){
         }
         break;
       }
+
       case "category":{
         temp.push("All");
         for (key in imagesInput){
@@ -97,6 +98,7 @@ var helper = (function(){
         }
         break;
       }
+
       case "date":{
         for (key in imagesInput){
           var currDate = imagesInput[key].hasOwnProperty('date');
@@ -111,7 +113,43 @@ var helper = (function(){
         }
       }
     }
+
     return temp;
   }
 
+  function regenerateGrid(gridSize, objectCounter, src, dataTitle, dataCategory, dataDate){
+    var galleryWrapper = document.getElementById("gallery-wrapper");
+
+    var customGalleryImage = document.createElement("div");
+    customGalleryImage.setAttribute("id","image-"+objectCounter);
+    customGalleryImage.setAttribute("class","gallery-image");
+
+    var customImgTag = document.createElement("img");
+    customImgTag.setAttribute("src",src);
+    customImgTag.setAttribute("class","image-thumbnail");
+    customImgTag.setAttribute("data-image-title",dataTitle);
+    customImgTag.setAttribute("data-image-category",dataCategory);
+    customImgTag.setAttribute("data-image-identifier",objectCounter);
+
+    var imgTagWidth = 100 / gridSize;
+    customGalleryImage.style.width = imgTagWidth + '%';
+
+    customGalleryImage.addEventListener("click",modal.process);
+
+    var customInfoOverlay = document.createElement("div");
+    customInfoOverlay.setAttribute("class","infoOverlay");
+
+    var infoOverlayValues = [dataTitle,dataCategory,new Date(parseInt(dataDate)).toLocaleDateString()];
+    var valuesInImageOverlay = ["Title","Category","Date"];
+    for (var temp = 0; temp < 3; temp++){
+      var p = document.createElement("p");
+      p.setAttribute("id","overlay"+valuesInImageOverlay[temp]);
+      p.innerHTML = infoOverlayValues[temp];
+      customInfoOverlay.appendChild(p);
+    }
+
+    customGalleryImage.appendChild(customImgTag);
+    customGalleryImage.appendChild(customInfoOverlay);
+    galleryWrapper.appendChild(customGalleryImage);
+  }
 }());
