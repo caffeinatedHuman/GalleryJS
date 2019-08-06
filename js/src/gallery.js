@@ -294,14 +294,14 @@ var gallery = (function (){
                 if (filteringByCategoryIsActive){
                     if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
                         if (tempObject[type].trim() == currTypeValue.trim()){
-                            helper.generateImageTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category, imagesInput[elem].date);
+                            helper.generateImageTag(gallery.currentGridSize, objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category, imagesInput[elem].date);
                             gallery.currentImageArray.push(imagesInput[elem]);
                             objectCounter++;
                         }
                     }
                 }else{
                     if (tempObject[type].trim() == currTypeValue.trim()){
-                        helper.generateImageTag(objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category,imagesInput[elem].date);
+                        helper.generateImageTag(gallery.currentGridSize, objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category,imagesInput[elem].date);
                         gallery.currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
                     }
@@ -335,13 +335,13 @@ var gallery = (function (){
 
             if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
                 categoriesArray.push()
-                helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
+                helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
                 currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
             }else{
                 if (event.target.selectedOptions[0].innerHTML == "All"){
                     categoriesArray.push()
-                    helper.generateImageTag(objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
+                    helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
                 }
