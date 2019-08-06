@@ -17,28 +17,25 @@ body{
   display: inline-block;
 }
 
-.filters-cat{
+.filters-cat {
   float: right;
 }
 
-#gallery-wrapper{
+#gallery-wrapper,
+.image-thumbnail {
   width: 100%;
 }
 
-.gallery-image, .image-thumbnail{
+.gallery-image,
+.image-thumbnail {
   height: 200px;
 }
 
-.gallery-image{
+.gallery-image {
   float: left;
 }
 
-.image-thumbnail{
-  width: 100%;
-}
-
-.infoOverlay{
-  // background-color: rgb(199, 169, 167, 0.4);
+.infoOverlay {
   background-color: adjust-color($color: #000000, $alpha: -0.5);
   position: relative;
   bottom: 203px;
@@ -48,32 +45,34 @@ body{
   color: white;
 }
 
-.gallery-image:hover{
+.gallery-image:hover {
   cursor: pointer;
   
-  .infoOverlay{
+  .infoOverlay {
     display: block;
   }
 }
 
-p{
+p {
   margin: 0;
 }
 
-#overlayTitle,#overlayCategory,#overlayDate{
+#overlayTitle,
+#overlayCategory,
+#overlayDate{
   padding-top: 2%;
   width: 100%;
   text-align: center;
   position: relative;
   top: 15%;
 }
-#overlayTitle{
+#overlayTitle {
   font-size: 3em;
 }
 /* --------------- */
 
 /* Modal Properties */
-#imageModalWrapper{
+#imageModalWrapper {
   width: 100%;
   height: 100%;
   position: absolute;
@@ -81,7 +80,7 @@ p{
   display: none;
 }
 
-#imageModal{
+#imageModal {
   position: relative;
   top: 2%;
   left: 20%;
@@ -92,50 +91,49 @@ p{
   border: 20px solid white;
 }
 
-#cross-icon{
+#cross-icon {
   width: 35px;
   height: 35px;
   float: right;
   
-  img{
+  img {
     width: 100%;
     position: relative;
-    top:0px;
+    top: 0px;
     right: 0px;
   }
 }
 
-#modal-image-container{
+#modal-image-container {
   width: 100%;
   height: 90%;
   
-  img{
+  img {
     width: 100%;
   }
 }
 
-#image-detail-container{
+#image-detail-container {
   width: 80%;
-  margin-left: 10%;
-  margin-right: 10%;
+  margin: 0% 10%;
   position: relative;
   top: 2%;
   left: 10%;
   color: white;
   font-size: 3em;
-  z-index:3;
+  z-index: 3;
 }
-#category,#date{
+
+#category,
+#date {
   font-size: 18px;
 }
 
-.image-detail{
-  width: 25%;
-  float: left;
+.image-detail {
   display: inline;
 }
 
-#imageModalWrapperOverlay{
+#imageModalWrapperOverlay {
   position: fixed;
   display: none;
   width: 100%;
@@ -150,29 +148,29 @@ p{
   color: white;
 }
 
-#cross-icon {
-  color: white;
+#cross-icon,
+.prev,
+.next {
   position: absolute;
+  font-size: 50px;
+}
+
+#cross-icon {
   top: 5px;
   right: 5px;
   font-size: 45px;
   font-weight: bold;
-  cursor: pointer;
 }
 
 .prev,
 .next {
-  cursor: pointer;
-  position: absolute;
   top: 50%;
   width: auto;
   padding: 16px;
   margin-top: -50px;
-  color: white;
-  font-size: 50px;
   border-radius: 0 3px 3px 0;
 
-  &:hover{
+  &:hover {
     background-color: grey;
   }
 }
