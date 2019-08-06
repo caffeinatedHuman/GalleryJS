@@ -29,8 +29,6 @@ var modal = (function (){
         var modal = document.getElementById("imageModal");
         modal.style.display = "none";
 
-        var galleryContainer = document.getElementById("gallery-container");
-
         var imageModalWrapper = document.getElementById("imageModalWrapper");
         imageModalWrapper.style.display = 'none';
 
@@ -43,8 +41,6 @@ var modal = (function (){
     }
 
     function processModal(currentImage){
-        var galleryContainer = document.getElementById("gallery-container");
-
         var imageModalWrapper = document.getElementById("imageModalWrapper");
         imageModalWrapper.style.display = 'block';
 

@@ -74,6 +74,8 @@ var gallery = (function (){
 
     var currentImageArray = []; //This variable will store the images currently present on the UI, and will be visible in the Lightbox
 
+    var valuesForSort = ["Title","Category","Date"];
+
     return {
         defaultGridSize: DEFAULT_GRID_SIZE,
         currentGridSize: currentGridSize,
@@ -84,7 +86,6 @@ var gallery = (function (){
         generator: init,
         updateCategory: updateCategory,
         sortImage: sortImages
-        // filterByCategory: filterByCategory
     }
 
     function init(){
@@ -127,7 +128,6 @@ var gallery = (function (){
         var customSelectFilters = document.createElement("select");
         customSelectFilters.setAttribute("id","filters-select");
 
-        var valuesForSort = ["Title","Category","Date"];
         for (var temp = 0 ; temp < valuesForSort.length; temp++){
             var option = document.createElement("option");
             option.setAttribute("value",valuesForSort[temp].toLowerCase());
@@ -196,7 +196,6 @@ var gallery = (function (){
         var customImageDetailContainer = document.createElement("div");
         customImageDetailContainer.setAttribute("id","image-detail-container");
 
-        var valuesForSort = ["Title","Category","Date"];
         for (var temp = 0 ; temp < valuesForSort.length; temp++){
             imageDetail = document.createElement("div");
             imageDetail.setAttribute("class","image-detail");
@@ -226,7 +225,7 @@ var gallery = (function (){
         for (var elem = 0; elem < noOfImages; elem++){
             if(objectCounter < (noOfImages)){
                 var currentObjectProp = imagesInput[elem];
-                helper.generateImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter].title, imagesInput[objectCounter].category,imagesInput[objectCounter].date);
+                helper.generateImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter]);
                 gallery.currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
             }
@@ -294,14 +293,14 @@ var gallery = (function (){
                 if (filteringByCategoryIsActive){
                     if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
                         if (tempObject[type].trim() == currTypeValue.trim()){
-                            helper.generateImageTag(gallery.currentGridSize, objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category, imagesInput[elem].date);
+                            helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
                             gallery.currentImageArray.push(imagesInput[elem]);
                             objectCounter++;
                         }
                     }
                 }else{
                     if (tempObject[type].trim() == currTypeValue.trim()){
-                        helper.generateImageTag(gallery.currentGridSize, objectCounter, tempObject.location, imagesInput[elem].title, imagesInput[elem].category,imagesInput[elem].date);
+                        helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
                         gallery.currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
                     }
@@ -335,13 +334,13 @@ var gallery = (function (){
 
             if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
                 categoriesArray.push()
-                helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
+                helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage);
                 currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
             }else{
                 if (event.target.selectedOptions[0].innerHTML == "All"){
                     categoriesArray.push()
-                    helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage["title"], currImage["category"],currImage["date"]);
+                    helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
                 }

@@ -28,7 +28,7 @@ var helper = (function(){
     }
   }
 
-  function _createImgTag(gridSize, objectCounter, src, dataTitle, dataCategory, dataDate){
+  function _createImgTag(gridSize, objectCounter, src, data){
     var galleryWrapper = document.getElementById("gallery-wrapper");
 
     var customGalleryImage = document.createElement("div");
@@ -38,10 +38,10 @@ var helper = (function(){
     var customImgTag = document.createElement("img");
     customImgTag.setAttribute("src",src);
     customImgTag.setAttribute("class","image-thumbnail");
-    customImgTag.setAttribute("data-image-title",dataTitle);
-    customImgTag.setAttribute("data-image-category",dataCategory);
+    customImgTag.setAttribute("data-image-title",data.title);
+    customImgTag.setAttribute("data-image-category",data.category);
     customImgTag.setAttribute("data-image-identifier",objectCounter);
-    customImgTag.setAttribute("data-image-date",dataDate);
+    customImgTag.setAttribute("data-image-date",data.date);
 
     var imgTagWidth = 100 / gridSize;
     customGalleryImage.style.width = imgTagWidth + '%';
@@ -51,7 +51,7 @@ var helper = (function(){
     var customInfoOverlay = document.createElement("div");
     customInfoOverlay.setAttribute("class","infoOverlay");
 
-    var infoOverlayValues = [dataTitle,dataCategory,new Date(parseInt(dataDate)).toLocaleDateString()];
+    var infoOverlayValues = [data.title,data.category,new Date(parseInt(data.date)).toLocaleDateString()];
     var valuesInImageOverlay = ["Title","Category","Date"];
     for (var temp = 0; temp < 3; temp++){
       var p = document.createElement("p");
