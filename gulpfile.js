@@ -3,16 +3,10 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify-es').default;
 var babel = require('gulp-babel');
-
 const {watch} = require('gulp');
 
 var jsFiles = ['js/src/helper.js','js/src/modal.js','js/src/gallery.js']
 
-gulp.task('default',gulp.parallel('sass','build-js'));
-
-gulp.task('watch',function(){
-    gulp.watch('sass/*.scss',gulp.series('sass'));
-});
 
 gulp.task('sass',function(){
     return gulp.src('sass/gallery.scss')
@@ -34,3 +28,9 @@ gulp.task('babel',function(){
         ))
         .pipe(gulp.dest('js/final_babel/'))
     });
+
+gulp.task('default',gulp.parallel('sass','build-js'));
+
+gulp.task('watch',function(){
+    gulp.watch('sass/*.scss',gulp.series('sass'));
+});
