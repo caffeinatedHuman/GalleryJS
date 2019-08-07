@@ -1,0 +1,182 @@
+body{
+  font-family: 'Roboto Light', sans-serif;
+  margin: 0;
+}
+
+/* Gallery Properties */
+#gallery-container{
+  width: 70%;
+  height: 50%;
+  margin: 0% 15%;
+}
+
+.filters,
+.filters-grid,
+.filters-cat{
+  margin: 1%;
+  display: inline-block;
+}
+
+.filters-cat {
+  float: right;
+}
+
+#gallery-wrapper,
+.image-thumbnail {
+  width: 100%;
+}
+
+.gallery-image,
+.image-thumbnail {
+  height: 200px;
+}
+
+.gallery-image {
+  float: left;
+}
+
+.infoOverlay {
+  background-color: adjust-color($color: #000000, $alpha: -0.5);
+  position: relative;
+  bottom: 203px;
+  width: 100%;
+  height: 200px;
+  display: none;
+  color: white;
+}
+
+.gallery-image:hover {
+  cursor: pointer;
+  
+  .infoOverlay {
+    display: block;
+  }
+}
+
+p {
+  margin: 0;
+}
+
+#overlayTitle,
+#overlayCategory,
+#overlayDate{
+  padding-top: 2%;
+  width: 100%;
+  text-align: center;
+  position: relative;
+  top: 15%;
+}
+#overlayTitle {
+  font-size: 3em;
+}
+/* --------------- */
+
+/* Modal Properties */
+#imageModalWrapper {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  display: none;
+}
+
+#imageModal {
+  position: relative;
+  top: 2%;
+  left: 20%;
+  z-index: 1;
+  width: 60%;
+  max-height: 90%;
+  display: none;
+  border: 20px solid white;
+}
+
+#cross-icon {
+  width: 35px;
+  height: 35px;
+  float: right;
+  
+  img {
+    width: 100%;
+    position: relative;
+    top: 0px;
+    right: 0px;
+  }
+}
+
+#modal-image-container {
+  width: 100%;
+  height: 90%;
+  
+  img {
+    width: 100%;
+  }
+}
+
+#image-detail-container {
+  width: 80%;
+  margin: 0% 10%;
+  position: relative;
+  top: 2%;
+  left: 10%;
+  color: white;
+  font-size: 3em;
+  z-index: 3;
+}
+
+#category,
+#date {
+  font-size: 18px;
+}
+
+.image-detail {
+  display: inline;
+}
+
+#imageModalWrapperOverlay {
+  position: fixed;
+  display: none;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(19, 18, 18, 0.678);
+  z-index: 1;
+  cursor: pointer;
+  color: white;
+}
+
+#cross-icon,
+.prev,
+.next {
+  position: absolute;
+  font-size: 50px;
+}
+
+#cross-icon {
+  top: 5px;
+  right: 5px;
+  font-size: 45px;
+  font-weight: bold;
+}
+
+.prev,
+.next {
+  top: 50%;
+  width: auto;
+  padding: 16px;
+  margin-top: -50px;
+  border-radius: 0 3px 3px 0;
+
+  &:hover {
+    background-color: grey;
+  }
+}
+
+.next {
+  right: 0;
+  border-radius: 3px 0 0 3px;
+}
+/* --------------- */

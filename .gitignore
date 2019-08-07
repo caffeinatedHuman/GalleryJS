@@ -1,0 +1,9 @@
+.DS_Store
+node_modules
+package-lock.json
+
+# Do not add Built JS files to VCS
+js/build/*.js
+
+# Do not add Built CSS files to VCS
+css/*.css
