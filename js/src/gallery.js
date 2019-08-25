@@ -56,8 +56,6 @@ var imagesInput =  {
 };
 
 var gallery = (function (){
-    const MIN_IMAGES = 0;
-    const MAX_IMAGES = 36;
     const DEFAULT_GRID_SIZE = 3;
 
     var noOfImages = Object.keys(imagesInput).length;
@@ -298,12 +296,10 @@ var gallery = (function (){
                             objectCounter++;
                         }
                     }
-                }else{
-                    if (tempObject[type].trim() == currTypeValue.trim()){
+                }else if (tempObject[type].trim() == currTypeValue.trim()){
                         helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
                         gallery.currentImageArray.push(imagesInput[elem]);
                         objectCounter++;
-                    }
                 }
             }
         }
@@ -337,13 +333,11 @@ var gallery = (function (){
                 helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage);
                 currentImageArray.push(imagesInput[elem]);
                 objectCounter++;
-            }else{
-                if (event.target.selectedOptions[0].innerHTML == "All"){
+            }else if (event.target.selectedOptions[0].innerHTML == "All"){
                     categoriesArray.push()
                     helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage);
                     currentImageArray.push(imagesInput[elem]);
                     objectCounter++;
-                }
             }
         }
 
