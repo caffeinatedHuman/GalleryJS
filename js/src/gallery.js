@@ -285,24 +285,26 @@ var gallery = (function (){
     for (var elem2 in sortedArray){
       var currTypeValue = sortedArray[elem2];
       
-      for (var elem = 0 ;elem < noOfImages;elem++){
+      for (var elem = 0 ; elem < noOfImages; elem++){
         tempObject = imagesInput[elem];
         
         if (filteringByCategoryIsActive){
-          if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
+          if (tempObject["category"].trim() == filteringByCategoryValue.trim()){
             if (tempObject[type].trim() == currTypeValue.trim()){
-              helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
-              gallery.currentImageArray.push(imagesInput[elem]);
-              objectCounter++;
+              sort_by_helper_function(objectCounter, tempObject);
             }
           }
         }else if (tempObject[type].trim() == currTypeValue.trim()){
-          helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
-          gallery.currentImageArray.push(imagesInput[elem]);
-          objectCounter++;
+          sort_by_helper_function(objectCounter, tempObject);
         }
       }
     }
+  }
+
+  function sort_by_helper_function(objectCounter, tempObject){
+    helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, tempObject);
+    gallery.currentImageArray.push(tempObject);
+    objectCounter++;
   }
   
   function updateCategory(event){
@@ -323,18 +325,18 @@ var gallery = (function (){
     
     removeAllImages();
     
-    for (elem = 0; elem<noOfImages ; elem++){
+    for (var elem = 0; elem<noOfImages ; elem++){
       var currImage = imagesInput[elem];
       var currCategory = currImage["category"];
       currCategory = currCategory.trim();
       
       if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
-        categoriesArray.push()
+        categoriesArray.push();
         helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage);
         currentImageArray.push(imagesInput[elem]);
         objectCounter++;
       }else if (event.target.selectedOptions[0].innerHTML == "All"){
-        categoriesArray.push()
+        categoriesArray.push();
         helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage);
         currentImageArray.push(imagesInput[elem]);
         objectCounter++;
