@@ -8,66 +8,68 @@ body{
   width: 70%;
   height: 50%;
   margin: 0% 15%;
-}
 
-.filters,
-.filters-grid,
-.filters-cat{
-  margin: 1%;
-  display: inline-block;
-}
+  .filters,
+  .filters-grid,
+  .filters-cat{
+    margin: 1%;
+    display: inline-block;
+  }
 
-.filters-cat {
-  float: right;
-}
+  .filters-cat {
+    float: right;
+  }
 
-#gallery-wrapper,
-.image-thumbnail {
-  width: 100%;
-}
+  #gallery-wrapper,
+  .image-thumbnail {
+    width: 100%;
+  }
 
-.gallery-image,
-.image-thumbnail {
-  height: 200px;
-}
+  .gallery-image,
+  .image-thumbnail {
+    height: 200px;
+  }
 
-.gallery-image {
-  float: left;
-}
+  .gallery-image {
+    float: left;
+  }
 
-.infoOverlay {
-  background-color: adjust-color($color: #000000, $alpha: -0.5);
-  position: relative;
-  bottom: 203px;
-  width: 100%;
-  height: 200px;
-  display: none;
-  color: white;
-}
-
-.gallery-image:hover {
-  cursor: pointer;
-  
   .infoOverlay {
-    display: block;
+    background-color: adjust-color($color: #000000, $alpha: -0.5);
+    position: relative;
+    bottom: 203px;
+    width: 100%;
+    height: 200px;
+    display: none;
+    color: white;
+  }
+
+  .gallery-image:hover {
+    cursor: pointer;
+
+    .infoOverlay {
+      display: block;
+    }
+  }
+
+
+  #overlayTitle,
+  #overlayCategory,
+  #overlayDate{
+    padding-top: 2%;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    top: 15%;
+  }
+
+  #overlayTitle {
+    font-size: 3em;
   }
 }
 
 p {
   margin: 0;
-}
-
-#overlayTitle,
-#overlayCategory,
-#overlayDate{
-  padding-top: 2%;
-  width: 100%;
-  text-align: center;
-  position: relative;
-  top: 15%;
-}
-#overlayTitle {
-  font-size: 3em;
 }
 /* --------------- */
 
@@ -95,7 +97,7 @@ p {
   width: 35px;
   height: 35px;
   float: right;
-  
+
   img {
     width: 100%;
     position: relative;
@@ -107,7 +109,7 @@ p {
 #modal-image-container {
   width: 100%;
   height: 90%;
-  
+
   img {
     width: 100%;
   }
@@ -126,7 +128,8 @@ p {
 
 #category,
 #date {
-  font-size: 18px;
+  // font-size: 1em; // Using em here will set the font size to 48px
+  font-size: 1rem; //Using rem here will set the font size to 16px
 }
 
 .image-detail {
@@ -152,13 +155,13 @@ p {
 .prev,
 .next {
   position: absolute;
-  font-size: 50px;
+  // font-size: 3em;
+  font-size: 3rem;
 }
 
 #cross-icon {
   top: 5px;
   right: 5px;
-  font-size: 45px;
   font-weight: bold;
 }
 
@@ -180,3 +183,7 @@ p {
   border-radius: 3px 0 0 3px;
 }
 /* --------------- */
+
+.hide{
+  display: none;
+}
