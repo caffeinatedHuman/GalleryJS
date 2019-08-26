@@ -8,7 +8,7 @@ var helper = (function(){
     generateTitles: _populateArray,
     generateDates: _populateArray,
     whatIsTheGridSize: _whatIsTheGridSize,
-    generateImageTag: _createImgTag
+    generateImageTag: _createImgTag,
     // generateGrid: regenerateGrid
   }
 
@@ -69,51 +69,47 @@ var helper = (function(){
     var temp = [];
     switch (type){
       case "title":{
-        for (key in imagesInput){
-          var currTitle = imagesInput[key].hasOwnProperty("title");
-
-          if (currTitle){
-            var tempTitle = imagesInput[key].title.trim();
-
-            if (!temp.includes(tempTitle)){
-              temp.push(tempTitle.trim());
-            }
-          }
-        }
+        temp = _populateArrayHelper('title');
         break;
       }
 
       case "category":{
-        temp.push("All");
-        for (key in imagesInput){
-          var currCategory = imagesInput[key].hasOwnProperty("category");
-
-          if (currCategory){
-            var tempCategory = imagesInput[key].category.trim();
-
-            if (!temp.includes(tempCategory)){
-              temp.push(tempCategory.trim());
-            }
-          }
-        }
+        temp = _populateArrayHelper('category');
         break;
       }
 
       case "date":{
-        for (key in imagesInput){
-          var currDate = imagesInput[key].hasOwnProperty('date');
+        // BROKEN!!!!!!!!!!!!!!!!!!!!!!
+        // for (key in imagesInput){
+        //   var currDate = imagesInput[key].hasOwnProperty('date');
 
-          if (currDate){
-            var tempDate = imagesInput[key].date.trim();
-
-            if (!temp.includes(tempCategory)){
-              temp.push(tempDate.trim());
-            }
-          }
-        }
+        //   var tempDate = imagesInput[key].date.trim();
+        //   if (currDate && (!temp.includes(tempCategory))){
+        //       temp.push(tempDate.trim());
+        //   }
+        // }
+        // _populateArrayHelper('date');
+        break;
       }
     }
 
     return temp;
   }
+
+  function _populateArrayHelper(property){
+    var temp2 = [];
+    if (property == 'category')
+    temp2.push('All');
+
+    for (key in imagesInput){
+      var currDate = imagesInput[key].hasOwnProperty(property);
+
+      var tempProperty = imagesInput[key][property].trim();
+      if (currDate && (!temp2.includes(tempProperty))){
+        temp2.push(tempProperty.trim());
+      }
+    }
+    return temp2;
+  }
+
 }());
