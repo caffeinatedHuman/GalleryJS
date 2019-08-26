@@ -79,13 +79,13 @@ p {
   height: 100%;
   position: absolute;
   top: 0;
+  left: 275px;
   display: none;
 }
 
 #imageModal {
   position: relative;
   top: 2%;
-  left: 20%;
   z-index: 1;
   width: 60%;
   max-height: 90%;
@@ -117,10 +117,9 @@ p {
 
 #image-detail-container {
   width: 80%;
-  margin: 0% 10%;
+  margin: 0% 20px;
   position: relative;
   top: 2%;
-  left: 10%;
   color: white;
   font-size: 3em;
   z-index: 3;
@@ -142,7 +141,6 @@ p {
   width: 100%;
   height: 100%;
   top: 0;
-  left: 0;
   right: 0;
   bottom: 0;
   background-color: rgba(19, 18, 18, 0.678);
