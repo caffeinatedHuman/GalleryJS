@@ -250,27 +250,7 @@ var gallery = (function (){
 
     var toSortBy = event.target.selectedOptions;
 
-    switch (toSortBy[0].innerHTML) {
-      case 'Title':{
-        var sortedTitles = allAvailableTitles.sort();
-        sortBy("title",sortedTitles);
-        break;
-      }
-      case 'Date':{
-        var sortedDates = allAvailableDates.sort();
-        sortBy("date",sortedDates);
-        break;
-      }
-      case 'Category':{
-        var sortedCategories = allAvailableCategories.sort();
-        sortBy("category",sortedCategories);
-        break;
-      }
-      default:{
-        removeAllImages();
-        generateGalleryGrid(noOfImages);
-      }
-    }
+    updateCategory_helper(toSortBy[0].innerHTML.toLowerCase());
   }
 
   function sortBy(type, sortedArray){
@@ -302,6 +282,7 @@ var gallery = (function (){
   }
 
   function sort_by_helper_function(objectCounter, tempObject){
+    // Rename the function to something appropriate
     helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, tempObject);
     gallery.currentImageArray.push(tempObject);
     objectCounter++;
@@ -327,16 +308,11 @@ var gallery = (function (){
       var currCategory = currImage["category"];
       currCategory = currCategory.trim();
 
-      if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
-        categoriesArray.push();
-        helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage);
-        currentImageArray.push(currImage);
-        objectCounter++;
-      }else if (event.target.selectedOptions[0].innerHTML == "All"){
-        categoriesArray.push();
-        helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage);
-        currentImageArray.push(currImage);
-        objectCounter++;
+      categoriesArray.push();
+      var eventSelectedOptions = event.target.selectedOptions[0].innerHTML.trim();
+
+      if ((currCategory == (eventSelectedOptions)) || (eventSelectedOptions == "All")){
+        sort_by_helper_function(objectCounter, currImage);
       }
     }
 
@@ -344,22 +320,27 @@ var gallery = (function (){
       var selectFilter = document.getElementById("filters-select");
       var selectFilterValue = selectFilter.options[selectFilter.selectedIndex].value;
 
-      switch (selectFilterValue){
-        case 'title':{
-          sortedArray = allAvailableTitles.sort();
-          sortBy('title',sortedArray);
-          break
-        }
-        case 'category':{
-          sortedArray = allAvailableCategories.sort();
-          sortBy('category',sortedArray);
-          break;
-        }
-        case 'date':{
-          sortedArray = allAvailableDates.sort();
-          sortBy('date',sortedArray);
-          break;
-        }
+      updateCategory_helper(selectFilterValue);
+    }
+  }
+
+  function updateCategory_helper(selectFilterValue){
+    // Rename the function appropriately
+    switch (selectFilterValue){
+      case 'title':{
+        sortedArray = allAvailableTitles.sort();
+        sortBy('title',sortedArray);
+        break
+      }
+      case 'category':{
+        sortedArray = allAvailableCategories.sort();
+        sortBy('category',sortedArray);
+        break;
+      }
+      case 'date':{
+        sortedArray = allAvailableDates.sort();
+        sortBy('date',sortedArray);
+        break;
       }
     }
   }
