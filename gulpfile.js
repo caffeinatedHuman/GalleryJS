@@ -23,14 +23,13 @@ gulp.task('build-js',function(){
 
 gulp.task('babel',function(){
     return gulp.src('js/build/gallery.js')
-    .pipe(babel(
-        { presets: ['es2015'] }
-        ))
-        .pipe(gulp.dest('js/final_babel/'))
-    });
+    .pipe(babel({ presets: ['es2015'] }))
+    .pipe(gulp.dest('js/final_babel/'))
+});
 
 gulp.task('default',gulp.parallel('sass','build-js'));
 
 gulp.task('watch',function(){
     gulp.watch('sass/*.scss',gulp.series('sass'));
+    gulp.watch('js/src/*.js',gulp.series('build-js'));
 });
