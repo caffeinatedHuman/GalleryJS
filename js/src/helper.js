@@ -111,5 +111,33 @@ var helper = (function(){
     }
     return temp2;
   }
-
+  function _populateArrayHelper2(){
+    var titleArray = [];
+    var categoriesArray = [];
+    var dateArray = [];
+    
+    for (key in imagesInput){
+      var currTitle = imagesInput[key].hasOwnProperty('title');
+      var tempPropertyTitle = imagesInput[key]['title'].trim();
+      if (currTitle && (!titleArray.includes('title'))){
+        titleArray.push(tempPropertyTitle.trim());
+      }
+      
+      var currCategory = imagesInput[key].hasOwnProperty('category');
+      var tempPropertyCategory = imagesInput[key]['category'].trim();
+      if (currCategory && (!categoriesArray.includes('category'))){
+        categoriesArray.push(tempPropertyCategory.trim());
+      }
+      
+      var currDate = imagesInput[key].hasOwnProperty('date');
+      var tempPropertyDate = imagesInput[key]['date'].trim();
+      if (currDate && (!dateArray.includes('date'))){
+        dateArray.push(tempPropertyDate.trim());
+      }
+    }
+    console.log(titleArray);
+    console.log(categoriesArray);
+    console.log(dateArray);
+    
+  }
 }());
