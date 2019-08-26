@@ -1,6 +1,9 @@
 // ----------- Modal Functions -----------
 var modal = (function (){
     var slideIndex = 1;
+    var imageModalContainer = document.getElementsByClassName('imageModalContainer');
+    let prevModalButton = document.getElementsByClassName('prev');
+    let nextModalButton = document.getElementsByClassName('next');
 
     return {
         generator: init,
@@ -26,14 +29,7 @@ var modal = (function (){
     }
 
     function closeModal(){
-        var modal = document.getElementById("imageModal");
-        modal.style.display = "none";
-
-        var imageModalWrapper = document.getElementById("imageModalWrapper");
-        imageModalWrapper.style.display = 'none';
-
-        var imageModalWrapperOverlay = document.getElementById("imageModalWrapperOverlay");
-        imageModalWrapperOverlay.style.display = 'none';
+        imageModalContainer[0].classList.add('hide');
     }
 
     function processImageClick(){
@@ -41,11 +37,7 @@ var modal = (function (){
     }
 
     function processModal(currentImage){
-        var imageModalWrapper = document.getElementById("imageModalWrapper");
-        imageModalWrapper.style.display = 'block';
-
-        var imageModalWrapperOverlay = document.getElementById("imageModalWrapperOverlay");
-        imageModalWrapperOverlay.style.display = 'block';
+        imageModalContainer[0].classList.remove('hide');
 
         slideIndex = parseInt(currentImage.getAttribute("data-image-identifier"));
 
@@ -104,11 +96,26 @@ var modal = (function (){
         var category = document.getElementById("category");
         var date = document.getElementById("date");
 
+        // if (n >= slides.length) {
+        //     slideIndex = 0
+        // }
+        prevModalButton[0].classList.remove('hide');
+        nextModalButton[0].classList.remove('hide');
+
+
         if (n >= slides.length) {
-            slideIndex = 0
+            prevModalButton[0].classList.remove('hide');
+            nextModalButton[0].classList.add('hide');
+            return;
         }
 
-        if (n < 0) {slideIndex = slides.length-1}
+        // if (n < 0) {slideIndex = slides.length-1}
+        if (n < 0) {
+            prevModalButton[0].classList.add('hide');
+            nextModalButton[0].classList.remove('hide');
+            return;
+        }
+
         for (i = 0; i < slides.length; i++) {
             slides[i].style.display = "none";
         }
