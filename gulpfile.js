@@ -18,7 +18,9 @@ gulp.task('build-js',function(){
     return gulp.src(jsFiles)
     .pipe(concat('gallery.js'))
     .pipe(uglify())
-    .pipe(gulp.dest('js/build/'))
+    .pipe(babel({ presets: ['es2015'] }))
+    .pipe(gulp.dest('js/final_babel/'))
+    // .pipe(gulp.dest('js/build/'))
 });
 
 gulp.task('babel',function(){
