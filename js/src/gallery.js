@@ -1,156 +1,119 @@
-var imagesInput =  {};
-var galleryConfiguration = {};
-
-var gallery = (function (){
+(function(){
+  var imagesInput =  {};
+  var galleryConfiguration = {};
+  
   const DEFAULT_GRID_SIZE = 3;
   
-  var noOfImages;
   var currentGridSize = DEFAULT_GRID_SIZE;
   
-  // var allAvailableTitles = helper.generateTitles('title');
-  // var allAvailableCategories = helper.generateCategories('category');
-  // var allAvailableDates = helper.generateDates('date');
-  var allAvailableTitles = helper.generateTitles;
-  var allAvailableCategories = helper.generateCategories;
-  var allAvailableDates = helper.generateDates;
+  var imageModalContainer = document.getElementsByClassName('imageModalContainer');
+  let prevModalButton = document.getElementsByClassName('prev');
+  let nextModalButton = document.getElementsByClassName('next');
   
-  var filteringByCategoryIsActive = false; //To store whether the filter by category section was toggled.
-  var filteringByCategoryValue = null;
-  var sortByTypeIsActive = true; //To store whether the Sort by any type (i.e. Title, Category, Date) section was toggled.
-  var sortByTypeIsValue = null;
-  
-  var currentImageArray = []; //This variable will store the images currently present on the UI, and will be visible in the Lightbox
-  
-  var valuesForSort = ['Title','Category','Date'];
-  
-  return {
-    defaultGridSize: DEFAULT_GRID_SIZE,
-    currentGridSize: currentGridSize,
-    noOfImages: noOfImages,
-    currentImageArray: currentImageArray,
-    availableCategories: allAvailableCategories,
-    availableTitles: allAvailableTitles,
-    generator: init,
-    updateCategory: updateCategory,
-    // sortImage: sortImages
-    sortImage: sortByType
-  };
-  
-  function init(){
-    noOfImages = Object.keys(imagesInput).length;
-    helper.populateAllTypes();
-    gallery.currentGridSize = helper.whatIsTheGridSize(noOfImages);
-    gallery.availableCategories;
-    generateSketchForGalleryContainer();
-    generateSketchForModal();
-    generateGalleryGrid(gallery.currentGridSize);
-    generateFilterByCategory();
+  var Gallery = function (configFile, imagesFile, element){
+    this.userDefinedElement = document.getElementById(element);
+    this.config = configFile;
+    this.imagesJSON = imagesFile;
+    this.imagesInput = [];
+    this.galleryConfiguration = [];
     
-    document.addEventListener('input',updateCategory);
-    // document.addEventListener('input',sortImages);
-    document.addEventListener('input',sortByType);
-    document.addEventListener('input',updateGrid);
+    this.currentImageArray;
+    this.noOfImages = 0;
+    this.currentGridSize;
     
-    modal.generator();
+    this.allAvailableTitles = [];
+    this.allAvailableCategories = ['All'];
+    this.allAvailableDates = [];
+    
+    this.helper_generateCategories;
+    this.helper_generateTitles;
+    this.helper_generateDates;
+    
+    this.filteringByCategoryIsActive;
+    this.filteringByCategoryValue;
+    this.sortByTypeIsActive;
+    this.sortByTypeIsValue;
+    
+    this.valuesForSort = ['Title','Category','Date'];
+    this.valuesForGrid = ['3 X 3','4 X 4','5 X 5'];
+    
+    // var gallery = this;
+    // gallery.loadConfiguration(configFile);
+    // gallery.loadJSON(imagesFile);
+    this.init(this.configFile, this.imagesJSON);
   }
   
-  // This function generates the Basic sketch of the Gallery:
-  function generateSketchForGalleryContainer(){
-    var galleryContainer = document.getElementById('gallery-container');
+  Gallery.prototype.generateFilterByCategory = function (){
+    let gallery = this;
+    let filterCategory = document.getElementById('filter-category');
     
-    var custonGalleryWrapper = document.createElement('div');
-    custonGalleryWrapper.setAttribute('class','gallery-wrapper');
-    
-    var customInfoOverlay = document.createElement('div');
-    customInfoOverlay.setAttribute('class','infoOverlay');
-    
-    var customGalleryFilterContainer = document.createElement('div');
-    customGalleryFilterContainer.setAttribute('class','gallery-filter-container');
-    
-    var customFilters = document.createElement('div');
-    customFilters.setAttribute('class','filters');
-    
-    var customSortCategory = document.createElement('div');
-    customSortCategory.setAttribute('class','filters-cat'); //Change the ID to sort-cat later
-    
-    var customGridFilter = document.createElement('div');
-    customGridFilter.setAttribute('class','filters-grid');
-    
-    var customSelectFilters = document.createElement('select');
-    customSelectFilters.setAttribute('id','filters-select');
-    
-    for (let temp = 0 ; temp < valuesForSort.length; temp++){
-      var option = document.createElement('option');
-      option.setAttribute('value',valuesForSort[temp].toLowerCase());
-      option.innerHTML = valuesForSort[temp];
-      customSelectFilters.appendChild(option);
-    }
-    
-    var customSelectGrids = document.createElement('select');
-    customSelectGrids.setAttribute('id','filters-grid');
-    
-    var valuesForGrid = ['3 X 3','4 X 4','5 X 5'];
-    for (var temp = 0 ; temp < valuesForGrid.length; temp++){
+    for (let elem = 0 ; elem < gallery.allAvailableCategories.length; elem++){
+      let value = gallery.allAvailableCategories[elem];
       let option = document.createElement('option');
-      option.setAttribute('value',temp+3);
-      option.innerHTML = valuesForGrid[temp];
-      customSelectGrids.appendChild(option);
+      option.innerHTML = value;
+      
+      filterCategory.appendChild(option);
     }
-    
-    var customSelectCategory = document.createElement('select');
-    customSelectCategory.setAttribute('id','filter-category');
-    
-    customFilters.appendChild(customSelectFilters);
-    customGridFilter.appendChild(customSelectGrids);
-    customSortCategory.appendChild(customSelectCategory);
-    
-    customGalleryFilterContainer.appendChild(customFilters);
-    customGalleryFilterContainer.appendChild(customGridFilter);
-    customGalleryFilterContainer.appendChild(customSortCategory);
-    
-    galleryContainer.appendChild(customGalleryFilterContainer);
-    galleryContainer.appendChild(custonGalleryWrapper);
   }
-  
+
+  // This function generates the images in the Gallery:
+  Gallery.prototype.generateGalleryGrid = function (gridSize){
+    let gallery = this;
+    
+    let noOfImages = gallery.noOfImages;
+    let objectCounter = 0;
+    let imagesInput = gallery.imagesInput;
+    
+    gallery.currentImageArray = [];
+    gallery.currentGridSize = gallery.whatIsTheGridSize(noOfImages);
+    
+    for (let elem = 0; elem < noOfImages; elem++){
+      if(objectCounter < (noOfImages)){
+        let currentObjectProp = imagesInput[elem];
+        gallery.helper_createImgTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter]);
+        gallery.currentImageArray.push(imagesInput[elem]);
+        objectCounter++;
+      }
+    }
+  }
+
   //This function generates the Basic sketch for the Modal:
-  function generateSketchForModal(){
-    var imageModalOverlay = document.getElementsByClassName('imageModalWrapperOverlay')[0];
-    var imageModalWrapper = document.getElementsByClassName('imageModalWrapper')[0];
-    var imageDetail;
+  Gallery.prototype.generateSketchForModal = function (){
+    var gallery = this;
+    let imageModalOverlay = document.getElementsByClassName('imageModalWrapperOverlay')[0];
+    let imageModalWrapper = document.getElementsByClassName('imageModalWrapper')[0];
     
-    var customImageModal = document.createElement('div');
+    let customImageModal = document.createElement('div');
     customImageModal.setAttribute('class','imageModal');
-    // customImageModal.setAttribute('class','modal');
     
-    var customCrossIcon = document.createElement('div');
+    let customCrossIcon = document.createElement('div');
     customCrossIcon.setAttribute('class','cross-icon');
     customCrossIcon.innerHTML = '&times;';
-    customCrossIcon.addEventListener('click',modal.close);
+    customCrossIcon.addEventListener('click',gallery.closeModal);
     
-    var customPrev = document.createElement('a');
+    let customPrev = document.createElement('a');
     customPrev.setAttribute('class','prev');
     customPrev.innerHTML = '&#10094;';
-    customPrev.addEventListener('click',function(){modal.change(-1);});
+    customPrev.addEventListener('click',function(){gallery.modal_changeImage(-1);});
     
-    var customNext = document.createElement('a');
+    let customNext = document.createElement('a');
     customNext.setAttribute('class','next');
     customNext.innerHTML = '&#10095;';
-    customNext.addEventListener('click',function(){modal.change(1);});
+    customNext.addEventListener('click',function(){gallery.modal_changeImage(1);});
     
-    var customModalMainWrapper = document.createElement('div');
+    let customModalMainWrapper = document.createElement('div');
     customModalMainWrapper.setAttribute('id','modal-main-wrapper');
     
-    var customModalImageContainer = document.createElement('div');
+    let customModalImageContainer = document.createElement('div');
     customModalImageContainer.setAttribute('id','modal-image-container');
     customModalImageContainer.setAttribute('class','sample');
     
-    var customImageDetailContainer = document.createElement('div');
+    let customImageDetailContainer = document.createElement('div');
     customImageDetailContainer.setAttribute('id','image-detail-container');
     
-    for (var temp = 0 ; temp < valuesForSort.length; temp++){
-      imageDetail = document.createElement('div');
-      imageDetail.setAttribute('class','image-detail');
-      var p = document.createElement('p');
+    let valuesForSort = gallery.valuesForSort;
+    for (let temp = 0 ; temp < valuesForSort.length; temp++){
+      let p = document.createElement('p');
       p.setAttribute('class',valuesForSort[temp].toLowerCase());
       p.innerHTML = valuesForSort[temp];
       customImageDetailContainer.appendChild(p);
@@ -167,40 +130,190 @@ var gallery = (function (){
     imageModalWrapper.appendChild(customImageDetailContainer);
   }
   
-  // This function generates the images in the Gallery:
-  function generateGalleryGrid(gridSize){
-    var objectCounter = 0;
+  // This function generates the Basic sketch of the Gallery:
+  Gallery.prototype.generateSketchForGalleryContainer = function (){
+    let gallery = this;
     
-    gallery.currentImageArray = [];
-    gallery.currentGridSize = helper.whatIsTheGridSize(gallery.noOfImages);
-    for (var elem = 0; elem < noOfImages; elem++){
-      if(objectCounter < (noOfImages)){
-        var currentObjectProp = imagesInput[elem];
-        helper.generateImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter]);
-        gallery.currentImageArray.push(imagesInput[elem]);
-        objectCounter++;
+    let galleryContainer = document.getElementById('gallery-container');
+    
+    let custonGalleryWrapper = document.createElement('div');
+    custonGalleryWrapper.setAttribute('class','gallery-wrapper');
+    
+    let customInfoOverlay = document.createElement('div');
+    customInfoOverlay.setAttribute('class','infoOverlay');
+    
+    let customGalleryFilterContainer = document.createElement('div');
+    customGalleryFilterContainer.setAttribute('class','gallery-filter-container');
+    
+    let customFilters = document.createElement('div');
+    customFilters.setAttribute('class','filters');
+    
+    let customSortCategory = document.createElement('div');
+    customSortCategory.setAttribute('class','filters-cat'); //Change the ID to sort-cat later
+    
+    let customGridFilter = document.createElement('div');
+    customGridFilter.setAttribute('class','filters-grid');
+    
+    let customSelectFilters = document.createElement('select');
+    customSelectFilters.setAttribute('id','filters-select');
+    
+    let valuesForSort = gallery.valuesForSort;
+    for (let temp = 0 ; temp < valuesForSort.length; temp++){
+      let option = document.createElement('option');
+      option.setAttribute('value',valuesForSort[temp].toLowerCase());
+      option.innerHTML = valuesForSort[temp];
+      customSelectFilters.appendChild(option);
+    }
+    
+    let customSelectGrids = document.createElement('select');
+    customSelectGrids.setAttribute('id','filters-grid');
+    
+    let valuesForGrid = gallery.valuesForGrid;
+    for (let temp = 0 ; temp < valuesForGrid.length; temp++){
+      let option = document.createElement('option');
+      option.setAttribute('value',temp+3);
+      option.innerHTML = valuesForGrid[temp];
+      customSelectGrids.appendChild(option);
+    }
+    
+    let customSelectCategory = document.createElement('select');
+    customSelectCategory.setAttribute('id','filter-category');
+    
+    customFilters.appendChild(customSelectFilters);
+    customGridFilter.appendChild(customSelectGrids);
+    customSortCategory.appendChild(customSelectCategory);
+    
+    customGalleryFilterContainer.appendChild(customFilters);
+    customGalleryFilterContainer.appendChild(customGridFilter);
+    customGalleryFilterContainer.appendChild(customSortCategory);
+    
+    galleryContainer.appendChild(customGalleryFilterContainer);
+    galleryContainer.appendChild(custonGalleryWrapper);
+  }
+  
+  Gallery.prototype.generateTypeArrays = function (){
+    var gallery = this;
+    for (var key in gallery.imagesInput){
+      var currTitle = gallery.imagesInput[key].hasOwnProperty('title');
+      var tempPropertyTitle = gallery.imagesInput[key]['title'].trim();
+      if (currTitle && (!gallery.allAvailableTitles.includes(tempPropertyTitle))){
+        gallery.allAvailableTitles.push(tempPropertyTitle.trim());
+      }
+      
+      var currCategory = gallery.imagesInput[key].hasOwnProperty('category');
+      var tempPropertyCategory = gallery.imagesInput[key]['category'].trim();
+      if (currCategory && (!gallery.allAvailableCategories.includes(tempPropertyCategory))){
+        gallery.allAvailableCategories.push(tempPropertyCategory.trim());
+      }
+      
+      var currDate = gallery.imagesInput[key].hasOwnProperty('date');
+      var tempPropertyDate = gallery.imagesInput[key]['date'].trim();
+      if (currDate && (!gallery.allAvailableDates.includes(tempPropertyDate))){
+        gallery.allAvailableDates.push(tempPropertyDate.trim());
       }
     }
   }
-  
-  // Filter & Sort functions:
-  // Filtering:
-  function generateFilterByCategory(){
-    var filterCategory = document.getElementById('filter-category');
+
+  Gallery.prototype.whatIsTheGridSize = function (noOfImages){
+    let maxImagesForGrid = DEFAULT_GRID_SIZE * DEFAULT_GRID_SIZE;
     
-    for (var elem = 0 ; elem < gallery.availableCategories.length; elem++){
-      var value = gallery.availableCategories[elem];
-      var option = document.createElement('option');
-      option.innerHTML = value;
-      
-      filterCategory.appendChild(option);
+    if (noOfImages <= DEFAULT_GRID_SIZE){
+      return DEFAULT_GRID_SIZE;
+    }else{
+      let newGridSize = DEFAULT_GRID_SIZE;
+      while (noOfImages > maxImagesForGrid){
+        newGridSize += 1;
+        maxImagesForGrid = newGridSize * newGridSize;
+      }
+      return newGridSize;
     }
   }
   
-  // Sorting:
+  Gallery.prototype.buildGallery = function (){
+    var gallery = this;
+    
+    gallery.noOfImages = Object.keys(gallery.imagesInput).length;
+    gallery.currentGridSize = gallery.whatIsTheGridSize(gallery.noOfImages);
+    gallery.generateTypeArrays();
+    
+    gallery.generateSketchForGalleryContainer();
+    gallery.generateSketchForModal();
+    gallery.generateGalleryGrid(gallery.currentGridSize);
+    gallery.generateFilterByCategory();
+    
+    document.addEventListener('input',gallery.updateCategory);
+    document.addEventListener('input',gallery.sortByType);
+    document.addEventListener('input',gallery.updateGrid);
+    
+    document.onkeydown = function (e) {
+      e = e || window.event;
+      if (e.keyCode == 37) {
+        document.querySelector('.prev').click();
+      }
+      else if (e.keyCode == 39) {
+        document.querySelector('.next').click();
+      }
+    };
+  }
 
-  function processSortedArray(type){
+  Gallery.prototype.fetchLocalFile = function(filename, callback){
+    let xmlRequest = new XMLHttpRequest();
+    xmlRequest.open('GET',filename,true);
+    xmlRequest.onreadystatechange = function(){
+      if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
+        callback(this.responseText);
+      }
+    };
+    xmlRequest.send();
+  }
+
+  Gallery.prototype.loadImageJSON = function (jsonFile){
+    var gallery = this;
+    gallery.fetchLocalFile(jsonFile, function(value){
+      gallery.imagesInput = (JSON.parse(value)).images;
+      gallery.buildGallery();
+    });
+  }
+  
+  Gallery.prototype.fetchLocalConfigFile = function (filename, callback){
+    let xmlRequest = new XMLHttpRequest();
+    xmlRequest.open('GET',filename,true);
+    xmlRequest.onreadystatechange = function(){
+      if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
+        callback(this, JSON.parse(this.responseText));
+      }
+    };
+    xmlRequest.send();
+  }
+  
+  Gallery.prototype.init = function (){
+    var gallery = this;
+    gallery.fetchLocalConfigFile(this.config, function(currentElement, value){
+      gallery.galleryConfiguration = value;
+      console.log(gallery.galleryConfiguration);
+      gallery.loadImageJSON(gallery.imagesJSON);
+    })
+  }
+  // --------------------X----------------------X----------------------------X-------------------------|
+  
+  
+  
+  
+  
+  
+  // Filter & Sort functions:
+  // Filtering:
+  
+  
+  // Sorting:
+  Gallery.prototype.processSortedArray = function (type){
+    let gallery = this;
+    
     let sortedArray;
+    let noOfImages = gallery.noOfImages;
+    let imagesInput = gallery.imagesInput;
+    let objectCounter = 0;
+    
     switch (type){
       case 'title':{
         sortedArray = allAvailableTitles.sort();
@@ -215,73 +328,70 @@ var gallery = (function (){
         break;
       }
     }
-    let objectCounter = 0;
+
     gallery.currentImageArray = [];
+    gallery.sortByTypeIsActive = true;
+    gallery.sortByTypeIsValue = type;
     
-    sortByTypeIsActive = true;
-    sortByTypeIsValue = type;
+    gallery.removeAllImages();
     
-    removeAllImages();
-    
-    for (var elem2 in sortedArray){
-      var currTypeValue = sortedArray[elem2];
+    for (let elem2 in sortedArray){
+      let currTypeValue = sortedArray[elem2];
       
-      for (var elem = 0 ; elem < noOfImages; elem++){
-        var tempObject = imagesInput[elem];
+      for (let elem = 0 ; elem < noOfImages; elem++){
+        let tempObject = imagesInput[elem];
         
-        if (filteringByCategoryIsActive){
-          if (tempObject['category'].trim() == filteringByCategoryValue.trim()){
+        if (gallery.filteringByCategoryIsActive){
+          if (tempObject['category'].trim() == gallery.filteringByCategoryValue.trim()){
             if (tempObject[type].trim() == currTypeValue.trim()){
-              regenerateImageTag(objectCounter, tempObject);
+              gallery.regenerateImageTag(objectCounter, tempObject);
             }
           }
         }else if (tempObject[type].trim() == currTypeValue.trim()){
-          regenerateImageTag(objectCounter, tempObject);
+          gallery.regenerateImageTag(objectCounter, tempObject);
         }
       }
     }
   }
   
-  function sortByType(event){
+  Gallery.prototype.sortByType = function (event){
     if (event.target.id !== 'filters-select') return;
     
     var toSortByType = event.target.selectedOptions;
-    processSortedArray(toSortByType[0].innerHTML.toLowerCase());
+    this.processSortedArray(toSortByType[0].innerHTML.toLowerCase());
   }
   
-  // function sort_by_helper_function(objectCounter, tempObject){
-  function regenerateImageTag(objectCounter, tempObject){
-    // Rename the function to something appropriate
+  Gallery.prototype.regenerateImageTag = function (objectCounter, tempObject){
     helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, tempObject);
     gallery.currentImageArray.push(tempObject);
     objectCounter++;
   }
   
-  function updateCategory(event){
-    var objectCounter = 0;
+  Gallery.prototype.updateCategory = function (event){
+    let objectCounter = 0;
     
     if (event.target.id !== 'filter-category') return;
     
-    var categoriesArray = [];
-    var selectedOption = event.target.selectedOptions[0];
-    var selectedOptionText = selectedOption.text;
-    var selectedOptionValue = selectedOption.innerHTML.trim();
+    let categoriesArray = [];
+    let selectedOption = event.target.selectedOptions[0];
+    let selectedOptionText = selectedOption.text;
+    let selectedOptionValue = selectedOption.innerHTML.trim();
     
-    filteringByCategoryIsActive = selectedOptionText == 'All' ? false : true;
-    filteringByCategoryValue = selectedOptionValue;
+    gallery.filteringByCategoryIsActive = selectedOptionText == 'All' ? false : true;
+    gallery.filteringByCategoryValue = selectedOptionValue;
     
-    removeAllImages();
+    gallery.removeAllImages();
     
-    for (var elem = 0; elem<noOfImages ; elem++){
-      var currImage = imagesInput[elem];
-      var currCategory = currImage['category'];
+    for (let elem = 0; elem<gallery.noOfImages ; elem++){
+      let currImage = igallery.magesInput[elem];
+      let currCategory = currImage['category'];
       currCategory = currCategory.trim();
       
       categoriesArray.push();
-      var eventSelectedOptions = event.target.selectedOptions[0].innerHTML.trim();
+      let eventSelectedOptions = event.target.selectedOptions[0].innerHTML.trim();
       
       if ((currCategory == (eventSelectedOptions)) || (eventSelectedOptions == 'All')){
-        regenerateImageTag(objectCounter, currImage);
+        gallery.regenerateImageTag(objectCounter, currImage);
       }
     }
     
@@ -289,66 +399,166 @@ var gallery = (function (){
       var selectFilter = document.getElementById('filters-select');
       var selectFilterValue = selectFilter.options[selectFilter.selectedIndex].value;
       
-      // updateCategory_helper(selectFilterValue);
       processSortedArray(selectFilterValue);
     }
   }
   
-  
-  
-  function updateGrid(event){
+  Gallery.prototype.updateGrid = function (event){
     if (event.target.id !== 'filters-grid') return;
     
-    var selectedGridValue = event.target.selectedOptions[0].value;
-    removeAllImages();
-    generateGalleryGrid(selectedGridValue);
+    var gallery = this;
+    let selectedGridValue = event.target.selectedOptions[0].value;
+    gallery.removeAllImages();
+    gallery.generateGalleryGrid(selectedGridValue);
   }
   
-  function removeAllImages(){
-    var galleryWrapper = document.getElementsByClassName('gallery-wrapper')[0];
+  Gallery.prototype.removeAllImages = function (){
+    let galleryWrapper = document.getElementsByClassName('gallery-wrapper')[0];
     while (galleryWrapper.firstChild){
       galleryWrapper.removeChild(galleryWrapper.firstChild);
     }
   }
-}());
-
-function fetchLocalFile(filename, callback){
-  let xmlRequest = new XMLHttpRequest();
-  xmlRequest.open('GET',filename,true);
-  xmlRequest.onreadystatechange = function(){
-    if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
-      callback(this.responseText);
+  
+  // ----------------------------------
+  // HELPER CODE
+  // -----------------------------------
+  
+  
+  
+  Gallery.prototype.helper_createImgTag = function (gridSize, objectCounter, src, data){
+    let gallery = this;
+    
+    let galleryWrapper = document.getElementsByClassName('gallery-wrapper')[0];
+    
+    let customGalleryImage = document.createElement('div');
+    customGalleryImage.setAttribute('id','image-'+objectCounter);
+    customGalleryImage.setAttribute('class','gallery-image');
+    
+    let customImgTag = document.createElement('img');
+    customImgTag.setAttribute('src',src);
+    customImgTag.setAttribute('class','image-thumbnail');
+    customImgTag.setAttribute('data-image-title',data.title);
+    customImgTag.setAttribute('data-image-category',data.category);
+    customImgTag.setAttribute('data-image-identifier',objectCounter);
+    customImgTag.setAttribute('data-image-date',data.date);
+    
+    let imgTagWidth = 100 / gridSize;
+    customGalleryImage.style.width = imgTagWidth + '%';
+    
+    customGalleryImage.addEventListener('click',gallery.modal_processImageClick);
+    
+    let customInfoOverlay = document.createElement('div');
+    customInfoOverlay.setAttribute('class','infoOverlay');
+    
+    let infoOverlayValues = [data.title,data.category,new Date(parseInt(data.date)).toLocaleDateString()];
+    let valuesInImageOverlay = ['Title','Category','Date'];
+    for (let temp = 0; temp < 3; temp++){
+      let p = document.createElement('p');
+      p.setAttribute('class','overlay'+valuesInImageOverlay[temp]);
+      p.innerHTML = infoOverlayValues[temp];
+      customInfoOverlay.appendChild(p);
     }
-  };
-  xmlRequest.send();
-}
-
-function fetchLocalConfigFile(filename, callback){
-  let xmlRequest = new XMLHttpRequest();
-  xmlRequest.open('GET',filename,true);
-  xmlRequest.onreadystatechange = function(){
-    if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
-      callback(JSON.parse(this.responseText));
+    
+    customGalleryImage.appendChild(customImgTag);
+    customGalleryImage.appendChild(customInfoOverlay);
+    galleryWrapper.appendChild(customGalleryImage);
+  }
+  
+  
+  
+  
+  // --------X--------------X------------
+  
+  // ----------------------------------
+  // Modal CODE
+  // -----------------------------------
+  
+  Gallery.prototype.closeModal = function (){
+    imageModalContainer[0].classList.add('hide');
+  }
+  
+  Gallery.prototype.modal_processImageClick = function (){
+    let currentImage = this.firstChild;
+    console.log(currentImage);
+    
+    let imageSrc = currentImage.getAttribute('src');
+    
+    imageModalContainer[0].classList.remove('hide');
+    
+    slideIndex = parseInt(currentImage.getAttribute('data-image-identifier'));
+    
+    var modalMainWrapper = document.getElementById('modal-main-wrapper');
+    
+    var check = currentImage.getAttribute('data-image-identifier');
+    var title = document.getElementById('image-detail-container').getElementsByClassName('title')[0];
+    var category = document.getElementById('image-detail-container').getElementsByClassName('category')[0];
+    var date = document.getElementById('image-detail-container').getElementsByClassName('date')[0];
+    
+    // First clear all elements inside the wrapper
+    if (modalMainWrapper.firstChild){
+      while (modalMainWrapper.firstChild){
+        modalMainWrapper.removeChild(modalMainWrapper.firstChild);
+      }
     }
-  };
-  xmlRequest.send();
-}
-
-function loadJSON(jsonFile){
-  fetchLocalFile(jsonFile, function(value){
-    imagesInput = (JSON.parse(value)).images;
-    // console.log(value);
-    gallery.generator();
-  });
-}
-
-function loadConfiguration(configJSONFile){
-  fetchLocalConfigFile(configJSONFile, function(value){
-    // console.log(JSON.parse(value));
-    galleryConfiguration = value;
-  })
-}
-
-
-loadConfiguration('configuration.json');
-loadJSON('images.json');
+    
+    var modalImageContainer = document.createElement('div');
+    modalImageContainer.setAttribute('id','modal-image-container');
+    modalImageContainer.setAttribute('class','sample');
+    
+    var imgTag = document.createElement('img');
+    imgTag.setAttribute('id','modal-image');
+    imgTag.setAttribute('src',imageSrc);
+    
+    modalImageContainer.style.display = 'block';
+    
+    modalImageContainer.appendChild(imgTag);
+    modalMainWrapper.appendChild(modalImageContainer);
+    
+    var modal = document.getElementsByClassName('imageModal')[0];
+    
+    modal.style.display = 'block';
+    title.innerHTML = currentImage.getAttribute('data-image-title');
+    category.innerHTML = currentImage.getAttribute('data-image-category');
+    date.innerHTML = new Date(parseInt(currentImage.getAttribute('data-image-date'))).toLocaleDateString();
+  }
+  
+  Gallery.prototype.modal_changeImage = function (n){
+    this.setModalImage(slideIndex += n);
+  }
+  
+  Gallery.prototype.setModalImage = function (n) {
+    var slides = document.getElementsByClassName('image-thumbnail');
+    prevModalButton[0].classList.remove('hide');
+    nextModalButton[0].classList.remove('hide');
+    
+    if (n >= slides.length) {
+      prevModalButton[0].classList.remove('hide');
+      nextModalButton[0].classList.add('hide');
+      return;
+    }
+    
+    if (n < 0) {
+      prevModalButton[0].classList.add('hide');
+      nextModalButton[0].classList.remove('hide');
+      return;
+    }
+    
+    let modalImgTag = document.getElementById('modal-image');
+    let modalImageDetailTitle = document.getElementById('image-detail-container').getElementsByClassName('title')[0];
+    let modalImageDetailCategory = document.getElementById('image-detail-container').getElementsByClassName('category')[0];
+    let modalImageDetailDate = document.getElementById('image-detail-container').getElementsByClassName('date')[0];
+    
+    let imageSrc = slides[n].getAttribute('src');
+    let title = slides[n].getAttribute('data-image-title');
+    let category = slides[n].getAttribute('data-image-category');
+    let date = new Date(parseInt(slides[n].getAttribute('data-image-date'))).toLocaleDateString();
+    
+    modalImgTag.setAttribute('src', imageSrc);
+    modalImageDetailTitle.innerHTML = title;
+    modalImageDetailCategory.innerHTML = category;
+    modalImageDetailDate.innerHTML = date;
+  }
+  
+  var app1 = new Gallery('configuration.json', 'images.json', 'gallery-container');
+  // app1.init();
+})()
