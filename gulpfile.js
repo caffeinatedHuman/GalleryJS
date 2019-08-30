@@ -3,9 +3,10 @@ var sass = require('gulp-sass');
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify-es').default;
 var babel = require('gulp-babel');
+var inject = require('gulp-inject');
 const {watch} = require('gulp');
 
-var jsFiles = ['js/src/helper.js','js/src/modal.js','js/src/gallery.js']
+var jsFiles = ['js/src/**.js']
 
 
 gulp.task('sass',function(){
@@ -19,14 +20,19 @@ gulp.task('build-js',function(){
     .pipe(concat('gallery.js'))
     .pipe(uglify())
     .pipe(babel({ presets: ['es2015'] }))
-    .pipe(gulp.dest('js/final_babel/'))
-    // .pipe(gulp.dest('js/build/'))
+    .pipe(gulp.dest('js/dist/'))
 });
 
 gulp.task('babel',function(){
     return gulp.src('js/build/gallery.js')
     .pipe(babel({ presets: ['es2015'] }))
     .pipe(gulp.dest('js/final_babel/'))
+});
+
+gulp.task('inject', function(){
+    return gulp.src('index.html')
+    .pipe(inject(gulp.src('js/src/*.js'), {relative: true}))
+    .pipe(gulp.dest('./'));
 });
 
 gulp.task('default',gulp.parallel('sass','build-js'));
