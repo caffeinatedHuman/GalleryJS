@@ -1,390 +1,504 @@
-var imagesInput =  {
-    "0":{
-        "title":"Title 9",
-        "category":"Category 0",
-        "date":"1565541066292",
-        "location": "images/1.jpg"
-    },
-    "1":{
-        "title":"Title 8",
-        "category":"Category 1",
-        "date":"1564911066292",
-        "location": "images/6.jpg"
-    },
-    "2":{
-        "title":"Title 7",
-        "category":"Category 2",
-        "date":"1568911266292",
-        "location": "images/8.jpg"
-    },
-    "3":{
-        "title":"Title 6",
-        "category":" Category 0",
-        "date":"1564741066292",
-        "location": "images/2.jpg"
-    },
-    "4":{
-        "title":"Title 5",
-        "category":" Category 3",
-        "date":"1564941066192",
-        "location": "images/5.jpg"
-    },
-    "5":{
-        "title":"Title 4",
-        "category":" Category 2",
-        "date":"1564842866292",
-        "location": "images/3.jpg"
-    },
-    "6":{
-        "title":"Title 3",
-        "category":" Category 1",
-        "date":"1574942866292",
-        "location": "images/7.jpg"
-    },
-    "7":{
-        "title":"Title 2",
-        "category":" Category 3",
-        "date":"1364941066292",
-        "location": "images/9.jpg"
-    },
-    "8":{
-        "title":"Title 1",
-        "category":" Category 1",
-        "date":"1364941066290",
-        "location": "images/6.jpg"
+(function(){
+
+  const DEFAULT_GRID_SIZE = 3;
+
+  var imageModalContainer = document.getElementsByClassName('imageModalContainer');
+  let prevModalButton = document.getElementsByClassName('prev');
+  let nextModalButton = document.getElementsByClassName('next');
+
+  var Gallery = function (configFile, imagesFile, element){
+    this.userDefinedElement = document.getElementById(element);
+    this.config = configFile;
+    this.imagesJSON = imagesFile;
+    this.imagesInput = [];
+    this.galleryConfiguration = [];
+
+    this.currentImageArray;
+    this.noOfImages = 0;
+    this.currentGridSize;
+
+    this.allAvailableTitles = [];
+    this.allAvailableCategories = ['All'];
+    this.allAvailableDates = [];
+
+    this.filteringByCategoryIsActive;
+    this.filteringByCategoryValue;
+    this.sortByTypeIsActive;
+    this.sortByTypeIsValue;
+
+    this.valuesForSort = ['Title','Category','Date'];
+    this.valuesForGrid = ['3 X 3','4 X 4','5 X 5'];
+
+    this.init(this.configFile, this.imagesJSON);
+  };
+
+  Gallery.prototype.generateFilterByCategory = function (){
+    let gallery = this;
+    let filterCategory = document.getElementById('filter-category');
+
+    for (let elem = 0 ; elem < gallery.allAvailableCategories.length; elem++){
+      let value = gallery.allAvailableCategories[elem];
+      let option = document.createElement('option');
+      option.innerHTML = value;
+
+      filterCategory.appendChild(option);
     }
-};
+  };
 
-var gallery = (function (){
-    const MIN_IMAGES = 0;
-    const MAX_IMAGES = 36;
-    const DEFAULT_GRID_SIZE = 3;
+  // This function generates the images in the Gallery:
+  Gallery.prototype.generateGalleryGrid = function (gridSize){
+    let gallery = this;
 
-    var noOfImages = Object.keys(imagesInput).length;
-    var currentGridSize = DEFAULT_GRID_SIZE;
+    let noOfImages = gallery.noOfImages;
+    let objectCounter = 0;
+    let imagesInput = gallery.imagesInput;
 
-    var allAvailableTitles = helper.generateTitles("title");
-    var allAvailableCategories = helper.generateCategories("category");
-    var allAvailableDates = helper.generateDates("date");
+    gallery.currentImageArray = [];
+    gallery.currentGridSize = gallery.whatIsTheGridSize(noOfImages);
 
-    var filteringByCategoryIsActive = false; //To store whether the filter by category section was toggled.
-    var filteringByCategoryValue = null;
-    var sortByTypeIsActive = true; //To store whether the Sort by any type (i.e. Title, Category, Date) section was toggled.
-    var sortByTypeIsValue = null;
+    for (let elem = 0; elem < noOfImages; elem++){
+      if(objectCounter < (noOfImages)){
+        let currentObjectProp = imagesInput[elem];
+        gallery.createImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter]);
+        gallery.currentImageArray.push(imagesInput[elem]);
+        objectCounter++;
+      }
+    }
+  };
 
-    var currentImageArray = []; //This variable will store the images currently present on the UI, and will be visible in the Lightbox
+  //This function generates the Basic sketch for the Modal:
+  Gallery.prototype.generateSketchForModal = function (){
+    var gallery = this;
+    let imageModalOverlay = document.getElementsByClassName('imageModalWrapperOverlay')[0];
+    let imageModalWrapper = document.getElementsByClassName('imageModalWrapper')[0];
 
-    var valuesForSort = ["Title","Category","Date"];
+    let customImageModal = document.createElement('div');
+    customImageModal.setAttribute('class','imageModal');
 
-    return {
-        defaultGridSize: DEFAULT_GRID_SIZE,
-        currentGridSize: currentGridSize,
-        noOfImages: noOfImages,
-        currentImageArray: currentImageArray,
-        availableCategories: allAvailableCategories,
-        availableTitles: allAvailableTitles,
-        generator: init,
-        updateCategory: updateCategory,
-        sortImage: sortImages
+    let customCrossIcon = document.createElement('div');
+    customCrossIcon.setAttribute('class','cross-icon');
+    customCrossIcon.innerHTML = '&times;';
+    customCrossIcon.addEventListener('click', function (){
+      imageModalContainer[0].classList.add('hide');
+    });
+
+    let customPrev = document.createElement('a');
+    customPrev.setAttribute('class','prev');
+    customPrev.innerHTML = '&#10094;';
+    customPrev.addEventListener('click',function(){gallery.navigateImageInModal(-1);});
+
+    let customNext = document.createElement('a');
+    customNext.setAttribute('class','next');
+    customNext.innerHTML = '&#10095;';
+    customNext.addEventListener('click',function(){gallery.navigateImageInModal(1);});
+
+    let customModalMainWrapper = document.createElement('div');
+    customModalMainWrapper.setAttribute('id','modal-main-wrapper');
+
+    let customModalImageContainer = document.createElement('div');
+    customModalImageContainer.setAttribute('id','modal-image-container');
+    customModalImageContainer.setAttribute('class','sample');
+
+    let customImageDetailContainer = document.createElement('div');
+    customImageDetailContainer.setAttribute('id','image-detail-container');
+
+    let valuesForSort = gallery.valuesForSort;
+    for (let temp = 0 ; temp < valuesForSort.length; temp++){
+      let p = document.createElement('p');
+      p.setAttribute('class',valuesForSort[temp].toLowerCase());
+      p.innerHTML = valuesForSort[temp];
+      customImageDetailContainer.appendChild(p);
     }
 
-    function init(){
-        gallery.currentGridSize = helper.whatIsTheGridSize(noOfImages);
+    let customModalImage = document.createElement('img');
+    customModalImage.setAttribute('id', 'modal-image');
+    customModalImage.setAttribute('src','');
+    customModalImageContainer.appendChild(customModalImage);
+    customModalMainWrapper.appendChild(customModalImageContainer);
 
-        generateSketchForGalleryContainer();
-        generateSketchForModal();
-        generateGalleryGrid(gallery.currentGridSize);
-        generateFilterByCategory();
+    imageModalOverlay.appendChild(customCrossIcon);
+    imageModalOverlay.appendChild(customPrev);
+    imageModalOverlay.appendChild(customNext);
+    customImageModal.appendChild(customModalMainWrapper);
 
-        document.addEventListener('input',updateCategory);
-        document.addEventListener('input',sortImages);
-        document.addEventListener('input',updateGrid);
+    imageModalWrapper.appendChild(customImageModal);
+    imageModalWrapper.appendChild(customImageDetailContainer);
+  };
 
-        modal.generator();
+  // This function generates the Basic sketch of the Gallery:
+  Gallery.prototype.generateSketchForGalleryContainer = function (){
+    let gallery = this;
+
+    let galleryContainer = document.getElementById('gallery-container');
+
+    let custonGalleryWrapper = document.createElement('div');
+    custonGalleryWrapper.setAttribute('class','gallery-wrapper');
+
+    let customInfoOverlay = document.createElement('div');
+    customInfoOverlay.setAttribute('class','infoOverlay');
+
+    let customGalleryFilterContainer = document.createElement('div');
+    customGalleryFilterContainer.setAttribute('class','gallery-filter-container');
+
+    let customFilters = document.createElement('div');
+    customFilters.setAttribute('class','filters');
+
+    let customSortCategory = document.createElement('div');
+    customSortCategory.setAttribute('class','filters-cat'); //Change the ID to sort-cat later
+
+    let customGridFilter = document.createElement('div');
+    customGridFilter.setAttribute('class','filters-grid');
+
+    let customSelectFilters = document.createElement('select');
+    customSelectFilters.setAttribute('id','filters-select');
+
+    let valuesForSort = gallery.valuesForSort;
+    for (let temp = 0 ; temp < valuesForSort.length; temp++){
+      let option = document.createElement('option');
+      option.setAttribute('value',valuesForSort[temp].toLowerCase());
+      option.innerHTML = valuesForSort[temp];
+      customSelectFilters.appendChild(option);
     }
 
-    // This function generates the Basic sketch of the Gallery:
-    function generateSketchForGalleryContainer(){
-        var galleryContainer = document.getElementById("gallery-container");
+    let customSelectGrids = document.createElement('select');
+    customSelectGrids.setAttribute('id','filters-grid');
 
-        var custonGalleryWrapper = document.createElement("div");
-        custonGalleryWrapper.setAttribute("id","gallery-wrapper");
+    let valuesForGrid = gallery.valuesForGrid;
+    for (let temp = 0 ; temp < valuesForGrid.length; temp++){
+      let option = document.createElement('option');
+      option.setAttribute('value',temp+3);
+      option.innerHTML = valuesForGrid[temp];
+      customSelectGrids.appendChild(option);
+    }
 
-        var customInfoOverlay = document.createElement("div");
-        customInfoOverlay.setAttribute("class","infoOverlay");
+    let customSelectCategory = document.createElement('select');
+    customSelectCategory.setAttribute('id','filter-category');
 
-        var customGalleryFilterContainer = document.createElement("div");
-        customGalleryFilterContainer.setAttribute("class","gallery-filter-container");
+    customFilters.appendChild(customSelectFilters);
+    customGridFilter.appendChild(customSelectGrids);
+    customSortCategory.appendChild(customSelectCategory);
 
-        var customFilters = document.createElement("div");
-        customFilters.setAttribute("class","filters");
+    customGalleryFilterContainer.appendChild(customFilters);
+    customGalleryFilterContainer.appendChild(customGridFilter);
+    customGalleryFilterContainer.appendChild(customSortCategory);
 
-        var customSortCategory = document.createElement("div");
-        customSortCategory.setAttribute("class","filters-cat"); //Change the ID to sort-cat later
+    galleryContainer.appendChild(customGalleryFilterContainer);
+    galleryContainer.appendChild(custonGalleryWrapper);
+  };
 
-        var customGridFilter = document.createElement("div");
-        customGridFilter.setAttribute("class","filters-grid");
+  Gallery.prototype.generateTypeArrays = function (){
+    var gallery = this;
+    for (var key in gallery.imagesInput){
+      var currTitle = gallery.imagesInput[key].hasOwnProperty('title');
+      var tempPropertyTitle = gallery.imagesInput[key]['title'].trim();
+      if (currTitle && (!gallery.allAvailableTitles.includes(tempPropertyTitle))){
+        gallery.allAvailableTitles.push(tempPropertyTitle.trim());
+      }
 
-        var customSelectFilters = document.createElement("select");
-        customSelectFilters.setAttribute("id","filters-select");
+      var currCategory = gallery.imagesInput[key].hasOwnProperty('category');
+      var tempPropertyCategory = gallery.imagesInput[key]['category'].trim();
+      if (currCategory && (!gallery.allAvailableCategories.includes(tempPropertyCategory))){
+        gallery.allAvailableCategories.push(tempPropertyCategory.trim());
+      }
 
-        for (var temp = 0 ; temp < valuesForSort.length; temp++){
-            var option = document.createElement("option");
-            option.setAttribute("value",valuesForSort[temp].toLowerCase());
-            option.innerHTML = valuesForSort[temp];
-            customSelectFilters.appendChild(option);
+      var currDate = gallery.imagesInput[key].hasOwnProperty('date');
+      var tempPropertyDate = gallery.imagesInput[key]['date'].trim();
+      if (currDate && (!gallery.allAvailableDates.includes(tempPropertyDate))){
+        gallery.allAvailableDates.push(tempPropertyDate.trim());
+      }
+    }
+  };
+
+  Gallery.prototype.whatIsTheGridSize = function (noOfImages){
+    let maxImagesForGrid = DEFAULT_GRID_SIZE * DEFAULT_GRID_SIZE;
+
+    if (noOfImages <= DEFAULT_GRID_SIZE){
+      return DEFAULT_GRID_SIZE;
+    }else{
+      let newGridSize = DEFAULT_GRID_SIZE;
+      while (noOfImages > maxImagesForGrid){
+        newGridSize += 1;
+        maxImagesForGrid = newGridSize * newGridSize;
+      }
+      return newGridSize;
+    }
+  };
+
+  Gallery.prototype.buildGallery = function (){
+    var gallery = this;
+
+    gallery.noOfImages = Object.keys(gallery.imagesInput).length;
+    gallery.currentGridSize = gallery.whatIsTheGridSize(gallery.noOfImages);
+    gallery.generateTypeArrays();
+
+    gallery.generateSketchForGalleryContainer();
+    gallery.generateSketchForModal();
+    gallery.generateGalleryGrid(gallery.currentGridSize);
+    gallery.generateFilterByCategory();
+
+    document.addEventListener('input',function(event){
+      let objectCounter = 0;
+
+      if (event.target.id !== 'filter-category') return;
+
+      let categoriesArray = [];
+      let selectedOption = event.target.selectedOptions[0];
+      let selectedOptionText = selectedOption.text;
+      let selectedOptionValue = selectedOption.innerHTML.trim();
+
+      gallery.filteringByCategoryIsActive = selectedOptionText == 'All' ? false : true;
+      gallery.filteringByCategoryValue = selectedOptionValue;
+
+      gallery.removeAllImages();
+
+      for (let elem = 0; elem<gallery.noOfImages ; elem++){
+        let currImage = gallery.imagesInput[elem];
+        let currCategory = currImage['category'];
+        currCategory = currCategory.trim();
+
+        categoriesArray.push();
+        let eventSelectedOptions = event.target.selectedOptions[0].innerHTML.trim();
+
+        if ((currCategory == (eventSelectedOptions)) || (eventSelectedOptions == 'All')){
+          gallery.regenerateImageTag(objectCounter, currImage);
         }
+      }
 
-        var customSelectGrids = document.createElement("select");
-        customSelectGrids.setAttribute("id","filters-grid");
+      if (gallery.sortByTypeIsActive){
+        var selectFilter = document.getElementById('filters-select');
+        var selectFilterValue = selectFilter.options[selectFilter.selectedIndex].value;
 
-        var valuesForGrid = ["3 X 3","4 X 4","5 X 5"];
-        for (var temp = 0 ; temp < valuesForGrid.length; temp++){
-            var option = document.createElement("option");
-            option.setAttribute("value",temp+3);
-            option.innerHTML = valuesForGrid[temp];
-            customSelectGrids.appendChild(option);
-        }
+        gallery.processSortedArray(selectFilterValue);
+      }
+    });
 
-        var customSelectCategory = document.createElement("select");
-        customSelectCategory.setAttribute("id","filter-category");
+    document.addEventListener('input',function(){
+      if (event.target.id !== 'filters-select') return;
 
-        customFilters.appendChild(customSelectFilters);
-        customGridFilter.appendChild(customSelectGrids);
-        customSortCategory.appendChild(customSelectCategory);
+      var toSortByType = event.target.selectedOptions;
+      gallery.processSortedArray(toSortByType[0].innerHTML.toLowerCase());
+    });
 
-        customGalleryFilterContainer.appendChild(customFilters);
-        customGalleryFilterContainer.appendChild(customGridFilter);
-        customGalleryFilterContainer.appendChild(customSortCategory);
+    document.addEventListener('input',function (){
+      if (event.target.id !== 'filters-grid') return;
 
-        galleryContainer.appendChild(customGalleryFilterContainer);
-        galleryContainer.appendChild(custonGalleryWrapper);
+      let selectedGridValue = event.target.selectedOptions[0].value;
+      gallery.removeAllImages();
+      gallery.generateGalleryGrid(selectedGridValue);
+    });
+
+    document.onkeydown = function (e) {
+      e = e || window.event;
+      if (e.keyCode == 37) {
+        document.querySelector('.prev').click();
+      }
+      else if (e.keyCode == 39) {
+        document.querySelector('.next').click();
+      }
+    };
+  };
+
+  Gallery.prototype.fetchLocalFile = function(filename, callback){
+    let xmlRequest = new XMLHttpRequest();
+    xmlRequest.open('GET',filename,true);
+    xmlRequest.onreadystatechange = function(){
+      if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
+        callback(this.responseText);
+      }
+    };
+    xmlRequest.send();
+  };
+
+  Gallery.prototype.loadImageJSON = function (jsonFile){
+    var gallery = this;
+    gallery.fetchLocalFile(jsonFile, function(value){
+      gallery.imagesInput = (JSON.parse(value)).images;
+      gallery.buildGallery();
+    });
+  };
+
+  Gallery.prototype.fetchLocalConfigFile = function (filename, callback){
+    let xmlRequest = new XMLHttpRequest();
+    xmlRequest.open('GET',filename,true);
+    xmlRequest.onreadystatechange = function(){
+      if ((xmlRequest.readyState == 4) && (xmlRequest.status == 200)){
+        callback(this, JSON.parse(this.responseText));
+      }
+    };
+    xmlRequest.send();
+  };
+
+  Gallery.prototype.init = function (){
+    var gallery = this;
+    gallery.fetchLocalConfigFile(this.config, function(currentElement, value){
+      gallery.galleryConfiguration = value;
+      console.log(gallery.galleryConfiguration);
+      gallery.loadImageJSON(gallery.imagesJSON);
+    });
+  };
+
+  Gallery.prototype.processSortedArray = function (type){
+    let gallery = this;
+
+    let sortedArray;
+    let noOfImages = gallery.noOfImages;
+    let imagesInput = gallery.imagesInput;
+    let objectCounter = 0;
+
+    switch (type){
+      case 'title':{
+        sortedArray = gallery.allAvailableTitles.sort();
+        break;
+      }
+      case 'category':{
+        sortedArray = gallery.allAvailableCategories.sort();
+        break;
+      }
+      case 'date':{
+        sortedArray = gallery.allAvailableDates.sort();
+        break;
+      }
     }
 
-    //This function generates the Basic sketch for the Modal:
-    function generateSketchForModal(){
-        var imageModalOverlay = document.getElementById("imageModalWrapperOverlay");
-        var imageModalWrapper = document.getElementById("imageModalWrapper");
-        var imageDetail;
+    gallery.currentImageArray = [];
+    gallery.sortByTypeIsActive = true;
+    gallery.sortByTypeIsValue = type;
 
-        var customImageModal = document.createElement("div");
-        customImageModal.setAttribute("id","imageModal");
-        customImageModal.setAttribute("class","modal");
+    gallery.removeAllImages();
 
-        var customCrossIcon = document.createElement("div");
-        customCrossIcon.setAttribute("id","cross-icon");
-        customCrossIcon.innerHTML = "&times;";
-        customCrossIcon.addEventListener('click',modal.close);
+    for (let elem2 in sortedArray){
+      let currTypeValue = sortedArray[elem2];
 
-        var customPrev = document.createElement("a");
-        customPrev.setAttribute("class","prev");
-        customPrev.innerHTML = "&#10094;";
-        customPrev.addEventListener('click',function(){modal.change(-1);});
+      for (let elem = 0 ; elem < noOfImages; elem++){
+        let tempObject = imagesInput[elem];
 
-        var customNext = document.createElement("a");
-        customNext.setAttribute("class","next");
-        customNext.innerHTML = "&#10095;";
-        customNext.addEventListener('click',function(){modal.change(1);});
-
-        var customModalMainWrapper = document.createElement("div");
-        customModalMainWrapper.setAttribute("id","modal-main-wrapper");
-
-        var customModalImageContainer = document.createElement("div");
-        customModalImageContainer.setAttribute("id","modal-image-container");
-        customModalImageContainer.setAttribute("class","sample");
-
-        var customImageDetailContainer = document.createElement("div");
-        customImageDetailContainer.setAttribute("id","image-detail-container");
-
-        for (var temp = 0 ; temp < valuesForSort.length; temp++){
-            imageDetail = document.createElement("div");
-            imageDetail.setAttribute("class","image-detail");
-            var p = document.createElement("p");
-            p.setAttribute("id",valuesForSort[temp].toLowerCase());
-            p.innerHTML = valuesForSort[temp];
-            customImageDetailContainer.appendChild(p);
-        }
-
-        customModalMainWrapper.appendChild(customModalImageContainer);
-
-        imageModalOverlay.appendChild(customCrossIcon);
-        imageModalOverlay.appendChild(customPrev);
-        imageModalOverlay.appendChild(customNext);
-        customImageModal.appendChild(customModalMainWrapper);
-
-        imageModalWrapper.appendChild(customImageModal);
-        imageModalWrapper.appendChild(customImageDetailContainer);
-    }
-
-    // This function generates the images in the Gallery:
-    function generateGalleryGrid(gridSize){
-        var objectCounter = 0;
-
-        gallery.currentImageArray = [];
-        gallery.currentGridSize = helper.whatIsTheGridSize(gallery.noOfImages);
-        for (var elem = 0; elem < noOfImages; elem++){
-            if(objectCounter < (noOfImages)){
-                var currentObjectProp = imagesInput[elem];
-                helper.generateImageTag(gridSize, objectCounter ,currentObjectProp.location, imagesInput[objectCounter]);
-                gallery.currentImageArray.push(imagesInput[elem]);
-                objectCounter++;
+        if (gallery.filteringByCategoryIsActive){
+          if (tempObject['category'].trim() == gallery.filteringByCategoryValue.trim()){
+            if (tempObject[type].trim() == currTypeValue.trim()){
+              gallery.regenerateImageTag(objectCounter, tempObject);
             }
+          }
+        }else if (tempObject[type].trim() == currTypeValue.trim()){
+          gallery.regenerateImageTag(objectCounter, tempObject);
         }
+      }
+    }
+  };
+
+  Gallery.prototype.regenerateImageTag = function (objectCounter, tempObject){
+    var gallery = this;
+    gallery.createImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, tempObject);
+    gallery.currentImageArray.push(tempObject);
+    objectCounter++;
+  };
+
+  Gallery.prototype.removeAllImages = function (){
+    let galleryWrapper = document.getElementsByClassName('gallery-wrapper')[0];
+    while (galleryWrapper.firstChild){
+      galleryWrapper.removeChild(galleryWrapper.firstChild);
+    }
+  };
+
+  Gallery.prototype.createImageTag = function (gridSize, objectCounter, src, data){
+    let gallery = this;
+
+    let galleryWrapper = document.getElementsByClassName('gallery-wrapper')[0];
+
+    let customGalleryImage = document.createElement('div');
+    customGalleryImage.setAttribute('id','image-'+objectCounter);
+    customGalleryImage.setAttribute('class','gallery-image');
+
+    let customImgTag = document.createElement('img');
+    customImgTag.setAttribute('src',src);
+    customImgTag.setAttribute('class','image-thumbnail');
+    customImgTag.setAttribute('data-image-title',data.title);
+    customImgTag.setAttribute('data-image-category',data.category);
+    customImgTag.setAttribute('data-image-identifier',objectCounter);
+    customImgTag.setAttribute('data-image-date',data.date);
+
+    let imgTagWidth = 100 / gridSize;
+    customGalleryImage.style.width = imgTagWidth + '%';
+
+    customGalleryImage.addEventListener('click',gallery.processImageClick);
+
+    let customInfoOverlay = document.createElement('div');
+    customInfoOverlay.setAttribute('class','infoOverlay');
+
+    let infoOverlayValues = [data.title,data.category,new Date(parseInt(data.date)).toLocaleDateString()];
+    let valuesInImageOverlay = ['Title','Category','Date'];
+    for (let temp = 0; temp < 3; temp++){
+      let p = document.createElement('p');
+      p.setAttribute('class','overlay'+valuesInImageOverlay[temp]);
+      p.innerHTML = infoOverlayValues[temp];
+      customInfoOverlay.appendChild(p);
     }
 
-    // Filter & Sort functions:
-    // Filtering:
-    function generateFilterByCategory(){
-        var filterCategory = document.getElementById("filter-category");
+    customGalleryImage.appendChild(customImgTag);
+    customGalleryImage.appendChild(customInfoOverlay);
+    galleryWrapper.appendChild(customGalleryImage);
+  };
 
-        for (var elem = 0 ; elem < gallery.availableCategories.length; elem++){
-            var value = gallery.availableCategories[elem];
-            var option = document.createElement("option");
-            option.innerHTML = value
+  Gallery.prototype.processImageClick = function (){
+    let currentImage = this.firstChild;
 
-            filterCategory.appendChild(option);
-        }
+    let imageSrc = currentImage.getAttribute('src');
+
+    imageModalContainer[0].classList.remove('hide');
+
+    slideIndex = parseInt(currentImage.getAttribute('data-image-identifier'));
+
+    var title = document.getElementById('image-detail-container').getElementsByClassName('title')[0];
+    var category = document.getElementById('image-detail-container').getElementsByClassName('category')[0];
+    var date = document.getElementById('image-detail-container').getElementsByClassName('date')[0];
+
+    let imgTag = document.getElementById('modal-image');
+    imgTag.setAttribute('src',imageSrc);
+
+    var modal = document.getElementsByClassName('imageModal')[0];
+
+    modal.style.display = 'block';
+    title.innerHTML = currentImage.getAttribute('data-image-title');
+    category.innerHTML = currentImage.getAttribute('data-image-category');
+    date.innerHTML = new Date(parseInt(currentImage.getAttribute('data-image-date'))).toLocaleDateString();
+  };
+
+  Gallery.prototype.navigateImageInModal = function (n){
+    this.setModalImage(slideIndex += n);
+  };
+  
+  Gallery.prototype.setModalImage = function (n) {
+    var slides = document.getElementsByClassName('image-thumbnail');
+    prevModalButton[0].classList.remove('hide');
+    nextModalButton[0].classList.remove('hide');
+
+    if (n >= slides.length) {
+      prevModalButton[0].classList.remove('hide');
+      nextModalButton[0].classList.add('hide');
+      return;
     }
 
-    // Sorting:
-    function sortImages(event){
-        if (event.target.id !== 'filters-select') return;
-
-        var toSortBy = event.target.selectedOptions;
-
-        switch (toSortBy[0].innerHTML) {
-            case 'Title':{
-                var sortedTitles = allAvailableTitles.sort();
-                sortBy("title",sortedTitles);
-                break;
-            }
-            case 'Date':{
-                var sortedDates = allAvailableDates.sort();
-                sortBy("date",sortedDates);
-                break;
-            }
-            case 'Category':{
-                var sortedCategories = allAvailableCategories.sort();
-                sortBy("category",sortedCategories);
-                break;
-            }
-            default:{
-                removeAllImages();
-                generateGalleryGrid(noOfImages);
-            }
-        }
+    if (n < 0) {
+      prevModalButton[0].classList.add('hide');
+      nextModalButton[0].classList.remove('hide');
+      return;
     }
 
-    function sortBy(type, sortedArray){
-        var objectCounter = 0;
-        gallery.currentImageArray = [];
+    let modalImgTag = document.getElementById('modal-image');
+    let modalImageDetailTitle = document.getElementById('image-detail-container').getElementsByClassName('title')[0];
+    let modalImageDetailCategory = document.getElementById('image-detail-container').getElementsByClassName('category')[0];
+    let modalImageDetailDate = document.getElementById('image-detail-container').getElementsByClassName('date')[0];
 
-        sortByTypeIsActive = true;
-        sortByTypeIsValue = type;
+    let imageSrc = slides[n].getAttribute('src');
+    let title = slides[n].getAttribute('data-image-title');
+    let category = slides[n].getAttribute('data-image-category');
+    let date = new Date(parseInt(slides[n].getAttribute('data-image-date'))).toLocaleDateString();
 
-        removeAllImages();
+    modalImgTag.setAttribute('src', imageSrc);
+    modalImageDetailTitle.innerHTML = title;
+    modalImageDetailCategory.innerHTML = category;
+    modalImageDetailDate.innerHTML = date;
+  };
 
-        for (var elem2 in sortedArray){
-            var currTypeValue = sortedArray[elem2];
-
-            for (var elem = 0 ;elem < noOfImages;elem++){
-                tempObject = imagesInput[elem];
-
-                if (filteringByCategoryIsActive){
-                    if (tempObject["category"].trim()==filteringByCategoryValue.trim()){
-                        if (tempObject[type].trim() == currTypeValue.trim()){
-                            helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
-                            gallery.currentImageArray.push(imagesInput[elem]);
-                            objectCounter++;
-                        }
-                    }
-                }else{
-                    if (tempObject[type].trim() == currTypeValue.trim()){
-                        helper.generateImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, imagesInput[elem]);
-                        gallery.currentImageArray.push(imagesInput[elem]);
-                        objectCounter++;
-                    }
-                }
-            }
-        }
-    }
-
-    function updateCategory(event){
-        var objectCounter = 0;
-
-        if (event.target.id !== 'filter-category') return;
-
-        if (event.target.selectedOptions[0].text == 'All'){
-            filteringByCategoryIsActive = false;
-        }
-        else{
-            filteringByCategoryIsActive = true;
-        }
-
-        filteringByCategoryValue = event.target.selectedOptions[0].innerHTML.trim();
-
-        var categoriesArray = [];
-
-        removeAllImages();
-
-        for (elem = 0; elem<noOfImages ; elem++){
-            var currImage = imagesInput[elem];
-            var currCategory = currImage["category"];
-            currCategory = currCategory.trim();
-
-            if (currCategory==(event.target.selectedOptions[0].innerHTML).trim()){
-                categoriesArray.push()
-                helper.generateImageTag(gallery.currentGridSize, objectCounter, currImage.location, currImage);
-                currentImageArray.push(imagesInput[elem]);
-                objectCounter++;
-            }else{
-                if (event.target.selectedOptions[0].innerHTML == "All"){
-                    categoriesArray.push()
-                    helper.generateImageTag(gallery.currentImageArray, objectCounter, currImage.location, currImage);
-                    currentImageArray.push(imagesInput[elem]);
-                    objectCounter++;
-                }
-            }
-        }
-
-        if (sortByTypeIsActive){
-            var selectFilter = document.getElementById("filters-select");
-            var selectFilterValue = selectFilter.options[selectFilter.selectedIndex].value;
-
-            switch (selectFilterValue){
-                case 'title':{
-                    sortedArray = allAvailableTitles.sort();
-                    sortBy('title',sortedArray);
-                    break
-                }
-                case 'category':{
-                    sortedArray = allAvailableCategories.sort();
-                    sortBy('category',sortedArray);
-                    break;
-                }
-                case 'date':{
-                    sortedArray = allAvailableDates.sort();
-                    sortBy('date',sortedArray);
-                    break;
-                }
-            }
-        }
-    }
-
-    function updateGrid(event){
-        if (event.target.id !== 'filters-grid') return;
-
-        var selectedGridValue = event.target.selectedOptions[0].value;
-        removeAllImages();
-        generateGalleryGrid(selectedGridValue);
-    }
-
-    function removeAllImages(){
-        var galleryWrapper = document.getElementById("gallery-wrapper");
-        while (galleryWrapper.firstChild){
-            galleryWrapper.removeChild(galleryWrapper.firstChild);
-        }
-    }
-}());
-
-gallery.generator();
+  var app1 = new Gallery('configuration.json', 'images.json', 'gallery-container');
+  // app1.init();
+})();
