@@ -23,8 +23,8 @@
 
     this.filteringByCategoryIsActive;
     this.filteringByCategoryValue;
-    this.sortByTypeIsActive;
-    this.sortByTypeIsValue;
+    this.sortByTypeIsActive = true;
+    this.sortByTypeIsValue = 'title';
 
     this.valuesForSort = ['Title','Category','Date'];
     this.valuesForGrid = ['3 X 3','4 X 4','5 X 5'];
@@ -131,8 +131,8 @@
 
     let galleryContainer = document.getElementById('gallery-container');
 
-    let custonGalleryWrapper = document.createElement('div');
-    custonGalleryWrapper.setAttribute('class','gallery-wrapper');
+    let customGalleryWrapper = document.createElement('div');
+    customGalleryWrapper.setAttribute('class','gallery-wrapper');
 
     let customInfoOverlay = document.createElement('div');
     customInfoOverlay.setAttribute('class','infoOverlay');
@@ -183,7 +183,7 @@
     customGalleryFilterContainer.appendChild(customSortCategory);
 
     galleryContainer.appendChild(customGalleryFilterContainer);
-    galleryContainer.appendChild(custonGalleryWrapper);
+    galleryContainer.appendChild(customGalleryWrapper);
   };
 
   Gallery.prototype.generateTypeArrays = function (){
