@@ -161,6 +161,11 @@
 
     galleryContainer.appendChild(customGalleryFilterContainer);
     galleryContainer.appendChild(customGalleryWrapper);
+
+    let galleryWrapper = document.getElementsByClassName('gallery-wrapper');
+    galleryWrapper[0].addEventListener('click', function(event){
+      gallery.processImageClick(event);
+    });
   };
 
   Gallery.prototype.generateTypeArrays = function (){
@@ -359,6 +364,7 @@
           gallery.regenerateImageTag(objectCounter, tempObject);
         }
       }
+      objectCounter++;
     }
   };
 
@@ -386,11 +392,9 @@
     customGalleryImage.setAttribute('class','gallery-image');
 
     let customImgTag = `<img src='${src}' class='image-thumbnail' data-image-title='${data.title}' data-image-category='${data.category}' data-image-identifier='${objectCounter}' data-image-date='${data.date}'>`;
-    
+
     let imgTagWidth = 100 / gridSize;
     customGalleryImage.style.width = imgTagWidth + '%';
-
-    customGalleryImage.addEventListener('click',gallery.processImageClick);
 
     let customInfoOverlay = document.createElement('div');
     customInfoOverlay.setAttribute('class','infoOverlay');
@@ -409,8 +413,14 @@
     galleryWrapper.appendChild(customGalleryImage);
   };
 
-  Gallery.prototype.processImageClick = function (){
-    let currentImage = this.firstChild;
+  Gallery.prototype.processImageClick = function (event){
+    let closestElement = event.target.closest('div');
+    let imageContainer = closestElement.parentNode;
+
+    if (imageContainer.getAttribute('class') != 'gallery-image')
+      return;
+
+    let currentImage = imageContainer.firstChild;
 
     let imageSrc = currentImage.getAttribute('src');
 
@@ -436,7 +446,7 @@
   Gallery.prototype.navigateImageInModal = function (n){
     this.setModalImage(slideIndex += n);
   };
-  
+
   Gallery.prototype.setModalImage = function (n) {
     var slides = document.getElementsByClassName('image-thumbnail');
     prevModalButton[0].classList.remove('hide');
