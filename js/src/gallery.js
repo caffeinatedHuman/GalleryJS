@@ -372,7 +372,6 @@
     var gallery = this;
     gallery.createImageTag(gallery.currentGridSize, objectCounter ,tempObject.location, tempObject);
     gallery.currentImageArray.push(tempObject);
-    objectCounter++;
   };
 
   Gallery.prototype.removeAllImages = function (){

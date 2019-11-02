@@ -1,4 +1,5 @@
 {
     "DEFAULT_GRID_SIZE": 3,
-    "MAXIMUM_GRID_SIZE": 10
+    "MAXIMUM_GRID_SIZE": 10,
+    "DEFAULT_SORT_TYPE": "title"
 }
